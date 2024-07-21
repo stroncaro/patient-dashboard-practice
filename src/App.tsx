@@ -1,33 +1,77 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+
+type Patient = {
+  id: number;
+  name: string;
+  middleName: string;
+  lastName: string;
+  age: number;
+  phone: string;
+  mail: string;
+  address: string;
+}
+
+const INITIAL_PATIENT_LIST: PatientList = [
+  {
+    id: 1,
+    name: "Marta",
+    middleName: "",
+    lastName: "Fiorito",
+    age: 53,
+    phone: "9999-9999",
+    mail: "marta@fiorito.com",
+    address: "Some Street 1234",
+  },
+  {
+    id: 2,
+    name: "Juan",
+    middleName: "Alberto",
+    lastName: "Perez",
+    age: 15,
+    phone: "9876-5432",
+    mail: "capo_el10@yahoo.com",
+    address: "Some Other Street 5678",
+  },
+]
+
+type PatientList = Patient[];
+
+const Header: React.FC = () => {
+  return (
+    <header>
+      <div className='company-name'>
+        <div className='logo'>S</div>
+        SuperSoft
+      </div>
+      <ul>
+        <li><a>Log In</a></li>
+        <li><a>Sign up</a></li>
+        <li><a>Log out</a></li>
+      </ul>
+    </header>
+  )
+}
+
+const Content: React.FC = () => {
+  const [patients, setPatients] = useState<PatientList>(INITIAL_PATIENT_LIST);
+  
+  return (
+    <main>
+      <h1>Patients</h1>
+      <ul>
+        {patients.map((patient, i) => 
+          <li key={i}>{patient.lastName}, {patient.name} {patient.middleName}</li>
+        )}
+      </ul>
+    </main>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header />
+      <Content />
     </>
   )
 }
