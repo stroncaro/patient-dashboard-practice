@@ -1,4 +1,4 @@
-import { MouseEventHandler, PropsWithChildren, useEffect, useState } from 'react'
+import { createContext, MouseEventHandler, PropsWithChildren, useContext, useEffect, useState } from 'react'
 import ReactDOM from 'react-dom';
 
 type Patient = {
@@ -39,6 +39,8 @@ const INITIAL_PATIENT_LIST: PatientList = [
 
 
 const Header: React.FC = () => {
+  const { isLoggedIn, logIn, logOut } = useContext(AuthContext);
+
   return (
     <header>
       <div className='company-name'>
@@ -46,9 +48,14 @@ const Header: React.FC = () => {
         SuperSoft
       </div>
       <ul>
-        <li><a>Log In</a></li>
-        <li><a>Sign up</a></li>
-        <li><a>Log out</a></li>
+        {!isLoggedIn ? (
+          <>
+            <li><button onClick={logIn}>Log In</button></li>
+            <li><button onClick={logIn}>Sign up</button></li>
+          </>
+        ) : (
+          <li><button onClick={logOut}>Log out</button></li>
+        )}
       </ul>
     </header>
   )
@@ -56,7 +63,8 @@ const Header: React.FC = () => {
 
 type PatientModalState = 'closed' | 'view' | 'edit';
 
-const Content: React.FC = () => {
+const PatientDashboard: React.FC = () => {
+  /* TODO: Make patients service to get and set patients */
   const [patients, setPatients] = useState<PatientList>(INITIAL_PATIENT_LIST);
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
   const [modalState, setModalState] = useState<PatientModalState>('closed');
@@ -160,13 +168,45 @@ const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title,
   );
 }
 
+const AuthContext = createContext({
+  isLoggedIn: false,
+  logIn: () => {},
+  logOut: () => {},
+})
+
+/* TODO: Refactor to a service */
+
+const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  /* TODO: Create actual log in functionality */
+  const logIn = () => setIsLoggedIn(true);
+  const logOut = () => setIsLoggedIn(false);
+
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, logIn, logOut }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+
+const AppContent: React.FC = () => {
+  const { isLoggedIn } = useContext(AuthContext);
+
+  return (
+    isLoggedIn
+    ? <PatientDashboard />
+    : <p>Please log in</p>
+  )
+}
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Header />
-      <Content />
-    </>
+      <AppContent />
+    </AuthProvider>
   )
 }
 
