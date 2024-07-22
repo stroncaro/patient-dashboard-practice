@@ -74,6 +74,8 @@ const PatientDashboard: React.FC = () => {
     setSelectedPatientIndex(patientIndex);    
   }
 
+  const deselectPatient: () => void = () => setSelectedPatientIndex(null);
+
   const viewPatient: (patientIndex: number) => void = (patientIndex) => {
     setSelectedPatientIndex(patientIndex);
     setModalState('view');
@@ -90,16 +92,37 @@ const PatientDashboard: React.FC = () => {
     <main>
       <h1>Patients</h1>
       <ul>
-        {patients.map((patient, patientIndex) => 
-          <li key={patient.id} className={patientIndex === selectedPatientIndex ? 'patient-list-selected' : ''} onClick={() => selectPatient(patientIndex)}>
-            {patient.lastName}, {patient.name} {patient.middleName}
-            {patientIndex === selectedPatientIndex && (
-              <div className='patient-list-selected-buttons'>
-                <button onClick={() => viewPatient(patientIndex)}>View</button>
-                <button onClick={() => editPatient(patientIndex)}>Edit</button>
-              </div>
-            )}
-          </li>
+        {patients.map((patient, patientIndex) => {
+          const isSelected = patientIndex === selectedPatientIndex;
+          return (
+            <li 
+              key={patient.id}
+              className={isSelected ? 'patient-list-selected' : ''}
+              onClick={() => isSelected ? deselectPatient() : selectPatient(patientIndex)}
+            >
+              {patient.lastName}, {patient.name} {patient.middleName}
+              {isSelected && (
+                <div className='patient-list-selected-buttons'>
+                  <button 
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      viewPatient(patientIndex);
+                    }}
+                  >
+                    View
+                  </button>
+                  <button 
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      editPatient(patientIndex);
+                    }}
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+            </li>
+          )}
         )}
       </ul>
       {modalState !== 'closed' && selectedPatientIndex !== null && (
