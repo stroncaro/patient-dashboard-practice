@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { MouseEventHandler, PropsWithChildren, useEffect, useState } from 'react'
+import ReactDOM from 'react-dom';
 
 type Patient = {
   id: number;
@@ -10,6 +11,8 @@ type Patient = {
   mail: string;
   address: string;
 }
+
+type PatientList = Patient[];
 
 const INITIAL_PATIENT_LIST: PatientList = [
   {
@@ -34,7 +37,6 @@ const INITIAL_PATIENT_LIST: PatientList = [
   },
 ]
 
-type PatientList = Patient[];
 
 const Header: React.FC = () => {
   return (
@@ -51,6 +53,7 @@ const Header: React.FC = () => {
     </header>
   )
 }
+
 
 const Content: React.FC = () => {
   const [patients, setPatients] = useState<PatientList>(INITIAL_PATIENT_LIST);
@@ -76,6 +79,41 @@ const Content: React.FC = () => {
     </main>
   )
 }
+
+interface ModalBoxProps {
+  title?: string;
+  closeCallback: () => void;
+}
+
+const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title, closeCallback }) => {
+
+  useEffect(() => {
+    function handleEscapeKeyDown(ev: KeyboardEvent) {
+      if (ev.key === 'Escape') closeCallback();
+    }
+    
+    window.addEventListener('keydown', handleEscapeKeyDown);
+    return () => { window.removeEventListener('keydown', handleEscapeKeyDown) }
+  }, []);
+  
+  const handleContentClick: MouseEventHandler<HTMLDivElement> = (ev) => ev.stopPropagation();
+
+  return ReactDOM.createPortal(
+    <div className='modal-box-container' onClick={closeCallback}>
+      <div className='modal-box' onClick={handleContentClick}>
+        <div className='modal-box-header'>
+          {title && <h1>{title}</h1>}
+          <button onClick={closeCallback}>X</button>
+        </div>
+        <div className='modal-body'>
+          {children}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 
 interface PatientModalProps {
   patient: Patient;
@@ -131,6 +169,7 @@ function App() {
     <>
       <Header />
       <Content />
+      <ModalBox closeCallback={() => console.log('TODO: close modal')} />
     </>
   )
 }
