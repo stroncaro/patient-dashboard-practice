@@ -61,6 +61,7 @@ const Header: React.FC = () => {
   )
 }
 
+/* TODO: Add a confirmation dialog before saving changes */
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 const PatientDashboard: React.FC = () => {
@@ -111,6 +112,11 @@ const PatientDashboard: React.FC = () => {
               ev.preventDefault();
               if (modalState === 'view') {
                 setModalState('edit');
+              }
+
+              if (modalState === 'edit') {
+                console.warn('Saving patient data not implemented yet');
+                setModalState('closed');
               }
             }}
             onCancel={closeModal}
