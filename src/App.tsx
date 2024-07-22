@@ -77,10 +77,12 @@ const PatientDashboard: React.FC = () => {
     setSelectedPatientIndex(patientIndex);
     setModalState('view');
   }
+
   const editPatient: (patientIndex: number) => void = (patientIndex) => {
     setSelectedPatientIndex(patientIndex);
     setModalState('edit');
   }
+
   const closeModal: () => void = () => setModalState('closed');
   
   return (
@@ -101,33 +103,43 @@ const PatientDashboard: React.FC = () => {
       </ul>
       {modalState !== 'closed' && selectedPatientIndex !== null && (
         <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
-          <div className='patient-info'>
+          <form className='patient-info'>
             <div>
-              <p>Name:</p>
-              <p>Middle Name:</p>
-              <p>Last Name:</p>
-              <p>Age:</p>
-              <p>Phone:</p>
-              <p>Mail:</p>
-              <p>Address:</p>
+              <label htmlFor='name'>Name:</label>
+              <input id='name' type='text' value={patients[selectedPatientIndex].name} disabled={modalState === 'view'} />  
             </div>
             <div>
-              <p>{patients[selectedPatientIndex].name}</p>
-              <p>{patients[selectedPatientIndex].middleName}</p>
-              <p>{patients[selectedPatientIndex].lastName}</p>
-              <p>{patients[selectedPatientIndex].age}</p>
-              <p>{patients[selectedPatientIndex].phone}</p>
-              <p>{patients[selectedPatientIndex].mail}</p>
-              <p>{patients[selectedPatientIndex].address}</p>
+              <label htmlFor='middleName'>Middle Name:</label>
+              <input id='middleName' type='text' value={patients[selectedPatientIndex].middleName} disabled={modalState === 'view'} />
             </div>
-          </div>
-          <div className='patient-button-container'>
-            {modalState === 'view' 
-              ? <button onClick={() => editPatient(selectedPatientIndex)}>Edit</button>
-              : <button>Save</button>
-            }
-            <button onClick={closeModal}>Cancel</button>
-          </div>
+            <div>
+              <label htmlFor='lastName'>Last Name:</label>
+              <input id='lastName' type='text' value={patients[selectedPatientIndex].lastName} disabled={modalState === 'view'} />
+            </div>
+            <div>
+              <label htmlFor='age'>Age:</label>
+              <input id='age' type='text' value={patients[selectedPatientIndex].age} disabled={modalState === 'view'} />
+            </div>
+            <div>
+              <label htmlFor='phone'>Phone:</label>
+              <input id='phone' type='text' value={patients[selectedPatientIndex].phone} disabled={modalState === 'view'} />
+            </div>
+            <div>
+              <label htmlFor='mail'>Mail:</label>
+              <input id='mail' type='email' value={patients[selectedPatientIndex].mail} disabled={modalState === 'view'} />
+            </div>
+            <div>
+              <label htmlFor='address'>Address:</label>
+              <input id='address' type='text' value={patients[selectedPatientIndex].address} disabled={modalState === 'view'} />
+            </div>
+            <div className='patient-button-container'>
+              {modalState === 'view' 
+                ? <button type='button' onClick={() => editPatient(selectedPatientIndex)}>Edit</button>
+                : <button type='submit'>Save</button>
+              }
+              <button type='button' onClick={closeModal}>Cancel</button>
+            </div>
+          </form>
         </ModalBox>
       )}
     </main>
