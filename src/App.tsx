@@ -54,27 +54,73 @@ const Header: React.FC = () => {
   )
 }
 
+type PatientModalState = 'closed' | 'view' | 'edit';
 
 const Content: React.FC = () => {
   const [patients, setPatients] = useState<PatientList>(INITIAL_PATIENT_LIST);
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
+  const [modalState, setModalState] = useState<PatientModalState>('closed');
   
-  const closeModal: () => void = () => {
-    setSelectedPatientIndex(null);
+  const selectPatient: (patientIndex: number) => void = (patientIndex) => {
+    setSelectedPatientIndex(patientIndex);    
   }
 
+  const viewPatient: (patientIndex: number) => void = (patientIndex) => {
+    setSelectedPatientIndex(patientIndex);
+    setModalState('view');
+  }
+  const editPatient: (patientIndex: number) => void = (patientIndex) => {
+    setSelectedPatientIndex(patientIndex);
+    setModalState('edit');
+  }
+  const closeModal: () => void = () => setModalState('closed');
+  
   return (
     <main>
       <h1>Patients</h1>
       <ul>
-        {patients.map((patient, i) => 
-          <li key={patient.id} onClick={() => setSelectedPatientIndex(i)}>
+        {patients.map((patient, patientIndex) => 
+          <li key={patient.id} className={patientIndex === selectedPatientIndex ? 'patient-list-selected' : ''} onClick={() => selectPatient(patientIndex)}>
             {patient.lastName}, {patient.name} {patient.middleName}
+            {patientIndex === selectedPatientIndex && (
+              <div className='patient-list-selected-buttons'>
+                <button onClick={() => viewPatient(patientIndex)}>View</button>
+                <button onClick={() => editPatient(patientIndex)}>Edit</button>
+              </div>
+            )}
           </li>
         )}
       </ul>
-      {selectedPatientIndex !== null && (
-        <PatientModal patient={patients[selectedPatientIndex]} close={closeModal}/>
+      {modalState !== 'closed' && selectedPatientIndex !== null && (
+        <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
+          <div className='patient-info'>
+            <div>
+              <p>Name:</p>
+              <p>Middle Name:</p>
+              <p>Last Name:</p>
+              <p>Age:</p>
+              <p>Phone:</p>
+              <p>Mail:</p>
+              <p>Address:</p>
+            </div>
+            <div>
+              <p>{patients[selectedPatientIndex].name}</p>
+              <p>{patients[selectedPatientIndex].middleName}</p>
+              <p>{patients[selectedPatientIndex].lastName}</p>
+              <p>{patients[selectedPatientIndex].age}</p>
+              <p>{patients[selectedPatientIndex].phone}</p>
+              <p>{patients[selectedPatientIndex].mail}</p>
+              <p>{patients[selectedPatientIndex].address}</p>
+            </div>
+          </div>
+          <div className='patient-button-container'>
+            {modalState === 'view' 
+              ? <button onClick={() => editPatient(selectedPatientIndex)}>Edit</button>
+              : <button>Save</button>
+            }
+            <button onClick={closeModal}>Cancel</button>
+          </div>
+        </ModalBox>
       )}
     </main>
   )
@@ -115,61 +161,11 @@ const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title,
 }
 
 
-interface PatientModalProps {
-  patient: Patient;
-  close: () => void;
-  state?: PatientModalState;
-}
-
-type PatientModalState = 'show' | 'edit';
-
-const PatientModal: React.FC<PatientModalProps> = ({ patient, state, close }) => {
-  const [modalState, setModalState] = useState<PatientModalState>(state || 'show');
-
-  return (
-    <div className='modal-container'>
-      <div className='patient-modal-box'>
-        <div className='modal-header'>
-          <button onClick={close}>X</button>
-        </div>
-        <div className='modal-body'>
-          <div>
-            <p>Name:</p>
-            <p>Middle Name:</p>
-            <p>Last Name:</p>
-            <p>Age:</p>
-            <p>Phone:</p>
-            <p>Mail:</p>
-            <p>Address:</p>
-          </div>
-          <div>
-            <p>{patient.name}</p>
-            <p>{patient.middleName}</p>
-            <p>{patient.lastName}</p>
-            <p>{patient.age}</p>
-            <p>{patient.phone}</p>
-            <p>{patient.mail}</p>
-            <p>{patient.address}</p>
-          </div>
-        </div>
-        <div className='modal-button-container'>
-          {modalState === 'show' 
-            ? <button onClick={() => setModalState('edit')}>Edit</button>
-            : <button>Save</button>
-          }
-          <button onClick={close}>Cancel</button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function App() {
   return (
     <>
       <Header />
       <Content />
-      <ModalBox closeCallback={() => console.log('TODO: close modal')} />
     </>
   )
 }
