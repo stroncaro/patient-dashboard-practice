@@ -103,47 +103,69 @@ const PatientDashboard: React.FC = () => {
       </ul>
       {modalState !== 'closed' && selectedPatientIndex !== null && (
         <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
-          <form className='patient-info'>
-            <div>
-              <label htmlFor='name'>Name:</label>
-              <input id='name' type='text' value={patients[selectedPatientIndex].name} disabled={modalState === 'view'} />  
-            </div>
-            <div>
-              <label htmlFor='middleName'>Middle Name:</label>
-              <input id='middleName' type='text' value={patients[selectedPatientIndex].middleName} disabled={modalState === 'view'} />
-            </div>
-            <div>
-              <label htmlFor='lastName'>Last Name:</label>
-              <input id='lastName' type='text' value={patients[selectedPatientIndex].lastName} disabled={modalState === 'view'} />
-            </div>
-            <div>
-              <label htmlFor='age'>Age:</label>
-              <input id='age' type='text' value={patients[selectedPatientIndex].age} disabled={modalState === 'view'} />
-            </div>
-            <div>
-              <label htmlFor='phone'>Phone:</label>
-              <input id='phone' type='text' value={patients[selectedPatientIndex].phone} disabled={modalState === 'view'} />
-            </div>
-            <div>
-              <label htmlFor='mail'>Mail:</label>
-              <input id='mail' type='email' value={patients[selectedPatientIndex].mail} disabled={modalState === 'view'} />
-            </div>
-            <div>
-              <label htmlFor='address'>Address:</label>
-              <input id='address' type='text' value={patients[selectedPatientIndex].address} disabled={modalState === 'view'} />
-            </div>
-            <div className='patient-button-container'>
-              {modalState === 'view' 
-                ? <button type='button' onClick={() => editPatient(selectedPatientIndex)}>Edit</button>
-                : <button type='submit'>Save</button>
+          <PatientForm
+            defaultValues={patients[selectedPatientIndex]}
+            disabled={modalState === 'view'}
+            submitButtonText={modalState === 'view' ? 'Edit' : 'Save'}
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              if (modalState === 'view') {
+                setModalState('edit');
               }
-              <button type='button' onClick={closeModal}>Cancel</button>
-            </div>
-          </form>
+            }}
+            onCancel={closeModal}
+          />
         </ModalBox>
       )}
     </main>
-  )
+  );
+}
+
+interface PatientFormProps {
+  defaultValues: Patient;
+  submitButtonText?: string;
+  onSubmit: (ev: React.FormEvent<HTMLFormElement>) => void;
+  onCancel: () => void;
+  disabled?: boolean;
+}
+
+const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, submitButtonText, onSubmit, onCancel }) => {
+  return (
+    <form className='patient-info' onSubmit={onSubmit}>
+      <div>
+        <label htmlFor='name'>Name:</label>
+        <input id='name' type='text' defaultValue={defaultValues.name} disabled={!!disabled} />  
+      </div>
+      <div>
+        <label htmlFor='middleName'>Middle Name:</label>
+        <input id='middleName' type='text' defaultValue={defaultValues.middleName} disabled={!!disabled} />
+      </div>
+      <div>
+        <label htmlFor='lastName'>Last Name:</label>
+        <input id='lastName' type='text' defaultValue={defaultValues.lastName} disabled={!!disabled} />
+      </div>
+      <div>
+        <label htmlFor='age'>Age:</label>
+        <input id='age' type='text' defaultValue={defaultValues.age} disabled={!!disabled} />
+      </div>
+      <div>
+        <label htmlFor='phone'>Phone:</label>
+        <input id='phone' type='text' defaultValue={defaultValues.phone} disabled={!!disabled} />
+      </div>
+      <div>
+        <label htmlFor='mail'>Mail:</label>
+        <input id='mail' type='email' defaultValue={defaultValues.mail} disabled={!!disabled} />
+      </div>
+      <div>
+        <label htmlFor='address'>Address:</label>
+        <input id='address' type='text' defaultValue={defaultValues.address} disabled={!!disabled} />
+      </div>
+      <div className='patient-button-container'>
+        <button type='submit'>{submitButtonText ? submitButtonText : 'Submit'}</button>
+        <button type='button' onClick={onCancel}>Cancel</button>
+      </div>
+    </form>
+  );
 }
 
 interface ModalBoxProps {
