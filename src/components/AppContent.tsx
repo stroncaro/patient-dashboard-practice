@@ -6,9 +6,11 @@ export const AppContent: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
 
   return (
-    isLoggedIn
-      ? <PatientDashboard />
-      : <p className="m-auto text-2xl">Please log in</p>
+    <main className="flex-grow flex justify-center items-start">
+      {isLoggedIn
+        ? <PatientDashboard />
+        : <p className="self-center text-2xl">Please log in</p>}
+    </main>
   );
 };
 

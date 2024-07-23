@@ -56,7 +56,7 @@ export const PatientDashboard: React.FC = () => {
   const closeModal: () => void = () => setModalState('closed');
   
   return (
-    <main>
+    <>
       <h1>Patients</h1>
       <ul>
         {patients.map((patient, patientIndex) => {
@@ -113,7 +113,7 @@ export const PatientDashboard: React.FC = () => {
           />
         </ModalBox>
       )}
-    </main>
+    </>
   );
 }
 
