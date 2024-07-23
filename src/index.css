@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.button {
+  @apply w-24 h-10 border rounded;
+}
+
+.button-highlight {
+  @apply bg-secondary text-white border-white hover:bg-white hover:text-secondary
+}
+
+.button-primary {
+  @apply bg-primary text-white border-white hover:bg-white hover:text-primary;
+}
+
+.button-white {
+  @apply bg-white text-black border-black;
+}
