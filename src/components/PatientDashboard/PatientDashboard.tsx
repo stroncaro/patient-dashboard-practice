@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PatientList } from "./patient.types";
 import ModalBox from "../common/ModalBox";
 import PatientForm from "./PatientForm/PatientForm";
+import clsx from "clsx";
 
 
 const INITIAL_PATIENT_LIST: PatientList = [
@@ -56,21 +57,30 @@ export const PatientDashboard: React.FC = () => {
   const closeModal: () => void = () => setModalState('closed');
   
   return (
-    <main>
-      <h1>Patients</h1>
+    <div className="w-1/2">
+      <div className="my-4">
+        <h1 className="text-3xl font-bold">Patients</h1>
+        <hr />
+      </div>
       <ul>
         {patients.map((patient, patientIndex) => {
           const isSelected = patientIndex === selectedPatientIndex;
           return (
             <li 
               key={patient.id}
-              className={isSelected ? 'patient-list-selected' : ''}
+              className={clsx(
+                "flex justify-between items-center px-4 my-1 border-l-2 hover:border-primary hover:cursor-pointer",
+                {
+                  "border-transparent" : !isSelected,
+                  "border-black" : isSelected,
+                }                
+              )}
               onClick={() => isSelected ? deselectPatient() : selectPatient(patientIndex)}
             >
               {patient.lastName}, {patient.name} {patient.middleName}
               {isSelected && (
-                <div className='patient-list-selected-buttons'>
-                  <button 
+                <div className="flex gap-4 text-sm">
+                  <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
                       viewPatient(patientIndex);
@@ -78,7 +88,7 @@ export const PatientDashboard: React.FC = () => {
                   >
                     View
                   </button>
-                  <button 
+                  <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
                       editPatient(patientIndex);
@@ -113,7 +123,7 @@ export const PatientDashboard: React.FC = () => {
           />
         </ModalBox>
       )}
-    </main>
+    </div>
   );
 }
 

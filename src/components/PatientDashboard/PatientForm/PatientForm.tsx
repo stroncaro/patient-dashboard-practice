@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Patient } from "../patient.types";
 
 interface PatientFormProps {
@@ -10,7 +11,16 @@ interface PatientFormProps {
 
 const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, submitButtonText, onSubmit, onCancel }) => {
   return (
-    <form className='patient-info' onSubmit={onSubmit}>
+    <form
+      className={clsx(
+        "w-96 [&>div]:flex [&>div]:justify-between [&>div:last-child]:justify-end [&>div]:items-baseline [&>div]:mb-1",
+        "[&_input]:max-w-[50%] [&_input]:px-2 [&_input]:py-1 text-sm",
+        {
+          "[&_input]:bg-black [&_input]:bg-opacity-5 [&_input:focus]:bg-primary [&_input:focus]:bg-opacity-20 [&_input:focus-visible]:outline-primary": !disabled,
+        },
+      )}
+      onSubmit={onSubmit}
+    >
       <div>
         <label htmlFor='name'>Name:</label>
         <input id='name' type='text' defaultValue={defaultValues.name} disabled={!!disabled} />  
@@ -39,9 +49,20 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, subm
         <label htmlFor='address'>Address:</label>
         <input id='address' type='text' defaultValue={defaultValues.address} disabled={!!disabled} />
       </div>
-      <div className='patient-button-container'>
-        <button type='submit'>{submitButtonText ? submitButtonText : 'Submit'}</button>
-        <button type='button' onClick={onCancel}>Cancel</button>
+      <div className="gap-4 mt-5">
+        <button 
+          type='submit'
+          className="btn btn-md border-secondary text-secondary hover:bg-secondary hover:text-white"
+        >
+          {submitButtonText ? submitButtonText : 'Submit'}
+        </button>
+        <button
+          type='button'
+          onClick={onCancel}
+          className="btn btn-md btn-white btn-hover-black"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   );
