@@ -59,7 +59,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, subm
         <button
           type='button'
           onClick={onCancel}
-          className="btn btn-md border-black hover:bg-black hover:text-white"
+          className="btn btn-md btn-white btn-hover-black"
         >
           Cancel
         </button>

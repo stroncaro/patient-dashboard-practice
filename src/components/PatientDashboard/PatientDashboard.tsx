@@ -80,7 +80,7 @@ export const PatientDashboard: React.FC = () => {
               {patient.lastName}, {patient.name} {patient.middleName}
               {isSelected && (
                 <div className="flex gap-4 text-sm">
-                  <button className="btn btn-md hover:border-primary hover:text-primary"
+                  <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
                       viewPatient(patientIndex);
@@ -88,7 +88,7 @@ export const PatientDashboard: React.FC = () => {
                   >
                     View
                   </button>
-                  <button className="btn btn-md hover:border-primary hover:text-primary"
+                  <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
                       editPatient(patientIndex);

@@ -26,6 +26,14 @@
   @apply bg-white text-black border-black;
 }
 
+.btn-hover-primary {
+  @apply hover:text-primary hover:border-primary
+}
+
+.btn-hover-black {
+  @apply hover:bg-black hover:text-white
+}
+
 @keyframes fade-in {
   0% { opacity: 0; }
   100% { opacity: 1; }
