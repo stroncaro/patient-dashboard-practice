@@ -1,12 +1,32 @@
 import clsx from "clsx";
-import { Patient } from "../../../services/patients.types";
+import { PatientPrototype } from "../../../services/patients.types";
 
 interface PatientFormProps {
-  defaultValues: Patient;
+  defaultValues: PatientPrototype;
   submitButtonText?: string;
-  onSubmit: (ev: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit: (data: PatientPrototype) => void;
   onCancel: () => void;
   disabled?: boolean;
+}
+
+const getPatientFromFormValues: () => PatientPrototype = () => {
+  const name = (document.getElementById('name') as HTMLInputElement).value;
+  const middleName = (document.getElementById('middleName') as HTMLInputElement).value;
+  const lastName = (document.getElementById('lastName') as HTMLInputElement).value;
+  const age = Number((document.getElementById('age') as HTMLInputElement).value);
+  const phone = (document.getElementById('phone') as HTMLInputElement).value;
+  const mail = (document.getElementById('mail') as HTMLInputElement).value;
+  const address = (document.getElementById('address') as HTMLInputElement).value;
+
+  return {
+    name: name,
+    middleName: middleName,
+    lastName: lastName,
+    age: age,
+    phone: phone,
+    mail: mail,
+    address: address,
+  }
 }
 
 const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, submitButtonText, onSubmit, onCancel }) => {
@@ -19,7 +39,10 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, subm
           "[&_input]:bg-black [&_input]:bg-opacity-5 [&_input:focus]:bg-primary [&_input:focus]:bg-opacity-20 [&_input:focus-visible]:outline-primary": !disabled,
         },
       )}
-      onSubmit={onSubmit}
+      onSubmit={(ev) => {
+        ev.preventDefault();
+        onSubmit(getPatientFromFormValues());
+      }}
     >
       <div>
         <label htmlFor='name'>Name:</label>

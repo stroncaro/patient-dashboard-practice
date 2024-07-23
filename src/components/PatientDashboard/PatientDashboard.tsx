@@ -9,7 +9,7 @@ import PatientForm from "./PatientForm/PatientForm";
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
-  const { patients } = usePatients();
+  const { patients, updatePatient } = usePatients();
 
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
   const selectPatient: (patientIndex: number) => void = (patientIndex) => setSelectedPatientIndex(patientIndex);    
@@ -72,14 +72,13 @@ export const PatientDashboard: React.FC = () => {
             defaultValues={patients[selectedPatientIndex]}
             disabled={modalState === 'view'}
             submitButtonText={modalState === 'view' ? 'Edit' : 'Save'}
-            onSubmit={(ev) => {
-              ev.preventDefault();
+            onSubmit={(returnedPatient) => {
               if (modalState === 'view') {
                 setModalState('edit');
               }
 
               if (modalState === 'edit') {
-                console.warn('Saving patient data not implemented yet');
+                updatePatient(patients[selectedPatientIndex].id, returnedPatient);
                 setModalState('view');
               }
             }}
