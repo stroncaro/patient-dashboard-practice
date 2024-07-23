@@ -8,7 +8,7 @@ export const AppContent: React.FC = () => {
   return (
     isLoggedIn
       ? <PatientDashboard />
-      : <p>Please log in</p>
+      : <p className="m-auto text-2xl">Please log in</p>
   );
 };
 
