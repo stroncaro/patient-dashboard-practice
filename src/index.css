@@ -25,3 +25,29 @@
 .btn-white {
   @apply bg-white text-black border-black;
 }
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.fade-in-fast {
+  animation: fade-in 200ms ease-in-out;
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.slide-down-fast {
+  animation: slide-down 200ms ease-out;
+}
+
+.fade-into-place {
+  animation: fade-in 1s ease-in-out, slide-down 1s ease-out;
+}

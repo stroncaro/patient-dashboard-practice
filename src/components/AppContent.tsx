@@ -9,7 +9,7 @@ export const AppContent: React.FC = () => {
     <main className="flex-grow flex justify-center items-start p-6">
       {isLoggedIn
         ? <PatientDashboard />
-        : <p className="self-center text-2xl">Please log in</p>}
+        : <p className="self-center text-2xl fade-into-place">Please log in</p>}
     </main>
   );
 };

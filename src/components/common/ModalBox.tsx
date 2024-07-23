@@ -22,11 +22,11 @@ const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title,
 
   return ReactDOM.createPortal(
     <div
-      className="flex justify-center items-center fixed top-0 left-0 size-full bg-black bg-opacity-30"
+      className="flex justify-center items-center fixed top-0 left-0 size-full bg-black bg-opacity-30 fade-in-fast"
       onClick={closeCallback}
     >
       <div
-        className="rounded-xl shadow-xl bg-white"
+        className="rounded-xl shadow-xl bg-white slide-down-fast"
         onClick={handleContentClick}
       >
         <div className="flex justify-end items-center pl-6 pr-2 py-2 rounded-t-xl text-lg font-bold bg-primary text-white">
