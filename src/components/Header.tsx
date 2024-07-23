@@ -16,7 +16,7 @@ export const Header: React.FC = () => {
             <li>
               <button
                 onClick={logIn}
-                className="button button-primary"
+                className="btn btn-xl btn-primary"
               >
                 Log In
               </button>
@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
             <li>
               <button
                 onClick={logIn}
-                className="button button-highlight"
+                className="btn btn-xl btn-highlight"
               >
                 Sign up
               </button>
@@ -34,7 +34,7 @@ export const Header: React.FC = () => {
           <li>
             <button
               onClick={logOut}
-              className="button button-primary"
+              className="btn btn-xl btn-primary"
             >
               Log out
             </button>
