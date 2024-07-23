@@ -7,11 +7,11 @@
 }
 
 .btn-md {
-  @apply w-16 h-6
+  @apply w-16 h-6 text-sm;
 }
 
 .btn-xl {
-  @apply w-24 h-10
+  @apply w-24 h-10 text-lg;
 }
 
 .btn-highlight {
