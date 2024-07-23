@@ -67,7 +67,19 @@ const usePatients: () => PatientService = () => {
   };
 
   const updatePatient: UpdatePatientFunction = (id, patient) => {
-    throw "Not Implemented";
+    if (validatePatientPrototype(patient)) {
+      setPatients((prev) => {
+        const index = prev.findIndex((p) => p.id === id);
+
+        if (index === -1) return prev;
+
+        return [
+          ...prev.slice(0, index),
+          { id: id, ...patient },
+          ...prev.slice(index+1),
+        ];
+      });
+    }
   };
 
   const deletePatient: DeletePatientFunction = (id) => {
