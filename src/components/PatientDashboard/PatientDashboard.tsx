@@ -80,7 +80,7 @@ export const PatientDashboard: React.FC = () => {
 
               if (modalState === 'edit') {
                 console.warn('Saving patient data not implemented yet');
-                setModalState('closed');
+                setModalState('view');
               }
             }}
             onCancel={closeModal}
