@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { PatientPrototype, PatientList } from "./patients.types"
 
 /* TODO: Build an actual API */
@@ -37,7 +37,17 @@ interface PatientService {
 }
 
 const usePatients: () => PatientService = () => {
-  const [patients, setPatients] = useState<PatientList>(INITIAL_PATIENT_LIST);
+  const [patients, setPatients] = useState<PatientList>([]);
+
+  /* TODO: Build an actual API to load values from */
+  useEffect(() => {
+    /* Simulate loading data from an API */
+    const timerId = setTimeout(() => {
+      setPatients(INITIAL_PATIENT_LIST);
+    }, 1000);
+
+    return () => clearTimeout(timerId);
+  }, []);
 
   const addPatient: AddPatientFunction = (patient) => {
     throw "Not Implemented";
