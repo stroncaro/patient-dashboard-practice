@@ -28,12 +28,25 @@ const INITIAL_PATIENT_LIST: PatientList = [
 type AddPatientFunction = (patient: PatientPrototype) => void;
 type UpdatePatientFunction = (id: number, patient: PatientPrototype) => void;
 type DeletePatientFunction = (id: number) => void;
+type ValidatePatientProtoFunction = (patient: PatientPrototype) => boolean;
 
 interface PatientService {
   patients: PatientList;
   addPatient: AddPatientFunction;
   updatePatient: UpdatePatientFunction;
   deletePatient: DeletePatientFunction;
+}
+
+const validatePatientPrototype: ValidatePatientProtoFunction = (patient) => {
+  return (
+    /^[a-zá-ú][a-zá-ú ]+$/gi.test(patient.name) &&
+    /^[a-zá-ú ]*$/gi.test(patient.middleName) &&
+    /^[a-zá-ú][a-zá-ú ]+$/gi.test(patient.lastName) &&
+    patient.age >= 0 && patient.age < 150 &&
+    /\+{0,1}[\d\-]+$/g.test(patient.phone) &&
+    patient.mail.includes('@') && patient.mail.includes('.') &&
+    patient.address !== ''
+  );
 }
 
 const usePatients: () => PatientService = () => {
