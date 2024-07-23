@@ -62,10 +62,24 @@ const usePatients: () => PatientService = () => {
     return () => clearTimeout(timerId);
   }, []);
 
+  /* TODO: Provide feedback to the caller to indicate success or failure */
   const addPatient: AddPatientFunction = (patient) => {
-    throw "Not Implemented";
+    if (validatePatientPrototype(patient)) {
+      setPatients((prev) => {
+        const newId: number = prev.reduce(
+          (maxId, patient) => Math.max(patient.id, maxId),
+          -1
+        ) + 1;
+
+        return [
+          ...prev,
+          { id: newId, ...patient }
+        ];
+      });
+    }
   };
 
+  /* TODO: Provide feedback to the caller to indicate success or failure */
   const updatePatient: UpdatePatientFunction = (id, patient) => {
     if (validatePatientPrototype(patient)) {
       setPatients((prev) => {
@@ -82,8 +96,9 @@ const usePatients: () => PatientService = () => {
     }
   };
 
+  /* TODO: Provide feedback to the caller to indicate success or failure */
   const deletePatient: DeletePatientFunction = (id) => {
-    throw "Not Implemented";   
+    setPatients((prev) => prev.filter((p) => p.id !== id));
   };
 
   return {
