@@ -21,13 +21,24 @@ const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title,
   const handleContentClick: MouseEventHandler<HTMLDivElement> = (ev) => ev.stopPropagation();
 
   return ReactDOM.createPortal(
-    <div className='modal-box-container' onClick={closeCallback}>
-      <div className='modal-box' onClick={handleContentClick}>
-        <div className='modal-box-header'>
+    <div
+      className="flex justify-center items-center fixed top-0 left-0 size-full bg-black bg-opacity-30"
+      onClick={closeCallback}
+    >
+      <div
+        className="rounded-xl shadow-xl bg-white"
+        onClick={handleContentClick}
+      >
+        <div className="flex justify-end items-center pl-6 pr-2 py-2 rounded-t-xl text-lg font-bold bg-primary text-white">
           {title && <h1>{title}</h1>}
-          <button onClick={closeCallback}>X</button>
+          <button
+            className="flex justify-center items-center size-6 ml-auto border rounded-xl border-white text-sm hover:bg-white hover:text-primary"
+            onClick={closeCallback}
+          >
+            X
+          </button>
         </div>
-        <div className='modal-body'>
+        <div className="px-6 py-2">
           {children}
         </div>
       </div>
