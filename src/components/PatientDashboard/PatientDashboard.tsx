@@ -1,40 +1,16 @@
 import { useState } from "react";
-import { PatientList } from "./patient.types";
+import clsx from "clsx";
+import usePatients from "../../services/patients";
+
 import ModalBox from "../common/ModalBox";
 import PatientForm from "./PatientForm/PatientForm";
-import clsx from "clsx";
-
-
-const INITIAL_PATIENT_LIST: PatientList = [
-  {
-    id: 1,
-    name: "Marta",
-    middleName: "",
-    lastName: "Fiorito",
-    age: 53,
-    phone: "9999-9999",
-    mail: "marta@fiorito.com",
-    address: "Some Street 1234",
-  },
-  {
-    id: 2,
-    name: "Juan",
-    middleName: "Alberto",
-    lastName: "Perez",
-    age: 15,
-    phone: "9876-5432",
-    mail: "capo_el10@yahoo.com",
-    address: "Some Other Street 5678",
-  },
-];
-
 
 /* TODO: Add a confirmation dialog before saving changes */
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
-  /* TODO: Make patients service to get and set patients */
-  const [patients, setPatients] = useState<PatientList>(INITIAL_PATIENT_LIST);
+  const { patients } = usePatients();
+
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
   const [modalState, setModalState] = useState<PatientModalState>('closed');
   
@@ -44,12 +20,12 @@ export const PatientDashboard: React.FC = () => {
 
   const deselectPatient: () => void = () => setSelectedPatientIndex(null);
 
-  const viewPatient: (patientIndex: number) => void = (patientIndex) => {
+  const openViewDialog: (patientIndex: number) => void = (patientIndex) => {
     setSelectedPatientIndex(patientIndex);
     setModalState('view');
   }
 
-  const editPatient: (patientIndex: number) => void = (patientIndex) => {
+  const openEditDialog: (patientIndex: number) => void = (patientIndex) => {
     setSelectedPatientIndex(patientIndex);
     setModalState('edit');
   }
@@ -83,7 +59,7 @@ export const PatientDashboard: React.FC = () => {
                   <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
-                      viewPatient(patientIndex);
+                      openViewDialog(patientIndex);
                     }}
                   >
                     View
@@ -91,7 +67,7 @@ export const PatientDashboard: React.FC = () => {
                   <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
-                      editPatient(patientIndex);
+                      openEditDialog(patientIndex);
                     }}
                   >
                     Edit

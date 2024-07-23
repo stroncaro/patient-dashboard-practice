@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Patient } from "../patient.types";
+import { Patient } from "../../../services/patients.types";
 
 interface PatientFormProps {
   defaultValues: Patient;
