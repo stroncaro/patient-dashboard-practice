@@ -12,24 +12,12 @@ export const PatientDashboard: React.FC = () => {
   const { patients } = usePatients();
 
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
-  const [modalState, setModalState] = useState<PatientModalState>('closed');
-  
-  const selectPatient: (patientIndex: number) => void = (patientIndex) => {
-    setSelectedPatientIndex(patientIndex);    
-  }
-
+  const selectPatient: (patientIndex: number) => void = (patientIndex) => setSelectedPatientIndex(patientIndex);    
   const deselectPatient: () => void = () => setSelectedPatientIndex(null);
-
-  const openViewDialog: (patientIndex: number) => void = (patientIndex) => {
-    setSelectedPatientIndex(patientIndex);
-    setModalState('view');
-  }
-
-  const openEditDialog: (patientIndex: number) => void = (patientIndex) => {
-    setSelectedPatientIndex(patientIndex);
-    setModalState('edit');
-  }
-
+  
+  const [modalState, setModalState] = useState<PatientModalState>('closed');
+  const openViewDialog: () => void = () => setModalState('view');
+  const openEditDialog: () => void = () => setModalState('edit');
   const closeModal: () => void = () => setModalState('closed');
   
   return (
@@ -59,7 +47,7 @@ export const PatientDashboard: React.FC = () => {
                   <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
-                      openViewDialog(patientIndex);
+                      openViewDialog();
                     }}
                   >
                     View
@@ -67,7 +55,7 @@ export const PatientDashboard: React.FC = () => {
                   <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
-                      openEditDialog(patientIndex);
+                      openEditDialog();
                     }}
                   >
                     Edit
