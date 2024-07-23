@@ -38,7 +38,7 @@ const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title,
             X
           </button>
         </div>
-        <div className="px-6 py-2">
+        <div className="px-6 py-4 text-black">
           {children}
         </div>
       </div>
