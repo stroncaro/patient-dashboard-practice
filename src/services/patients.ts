@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Patient, PatientList } from "./patients.types"
+import { PatientPrototype, PatientList } from "./patients.types"
 
 /* TODO: Build an actual API */
 const INITIAL_PATIENT_LIST: PatientList = [
@@ -25,8 +25,8 @@ const INITIAL_PATIENT_LIST: PatientList = [
   },
 ];
 
-type AddPatientFunction = (patient: Patient) => void;
-type UpdatePatientFunction = (id: number, patient: Patient) => void;
+type AddPatientFunction = (patient: PatientPrototype) => void;
+type UpdatePatientFunction = (id: number, patient: PatientPrototype) => void;
 type DeletePatientFunction = (id: number) => void;
 
 interface PatientService {

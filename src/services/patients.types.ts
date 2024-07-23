@@ -1,5 +1,4 @@
-export type Patient = {
-  id: number;
+export type PatientPrototype = {
   name: string;
   middleName: string;
   lastName: string;
@@ -7,6 +6,10 @@ export type Patient = {
   phone: string;
   mail: string;
   address: string;
+}
+
+export type Patient = PatientPrototype & {
+  id: number;
 };
 
 export type PatientList = Patient[];
