@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { PatientPrototype, PatientList } from "./patients.types"
+import { PatientPrototype, PatientList, PatientPrototypeKeys } from "./patients.types"
 
 /* TODO: Build an actual API */
 const INITIAL_PATIENT_LIST: PatientList = [
@@ -40,12 +40,12 @@ interface PatientService {
 const validatePatientName = (name: string) => /^[a-zá-ú][a-zá-ú ]+$/gi.test(name);
 const validatePatientMiddleName = (middleName: string) => /^[a-zá-ú ]*$/gi.test(middleName);
 const validatePatientLastName = (name: string) => /^[a-zá-ú][a-zá-ú ]+$/gi.test(name);
-const validatePatientAge = (age: number) => age >= 0 && age < 150;
+const validatePatientAge = (age: string) => Number(age) >= 0 && Number(age) < 150;
 const validatePatientPhone = (phone: string) => /\+{0,1}[\d\-]+$/g.test(phone);
 const validatePatientMail = (mail: string) => mail.includes('@') && mail.includes('.');
 const validatePatientAddress = (address: string) => address !== '';
 
-export const validationFunctions = {
+export const validationFunctions: {[key in PatientPrototypeKeys]: (field: string) => boolean } = {
   name: validatePatientName,
   middleName: validatePatientMiddleName,
   lastName: validatePatientLastName,
@@ -60,7 +60,7 @@ const validatePatientPrototype: ValidatePatientProtoFunction = (patient) => {
     validatePatientName(patient.name) &&
     validatePatientMiddleName(patient.middleName) &&
     validatePatientLastName(patient.lastName) &&
-    validatePatientAge(patient.age) &&
+    validatePatientAge(patient.age.toString()) &&
     validatePatientPhone(patient.phone) &&
     validatePatientMail(patient.mail) &&
     validatePatientAddress(patient.address)

@@ -12,4 +12,6 @@ export type Patient = PatientPrototype & {
   id: number;
 };
 
+export type PatientPrototypeKeys = keyof PatientPrototype;
+
 export type PatientList = Patient[];

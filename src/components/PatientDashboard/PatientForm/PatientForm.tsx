@@ -1,5 +1,7 @@
 import clsx from "clsx";
-import { PatientPrototype } from "../../../services/patients.types";
+import { PatientPrototype, PatientPrototypeKeys } from "../../../services/patients.types";
+import { validationFunctions } from "../../../services/patients";
+import { useState } from "react";
 
 interface PatientFormProps {
   defaultValues: PatientPrototype;
@@ -29,7 +31,33 @@ const getPatientFromFormValues: () => PatientPrototype = () => {
   }
 }
 
+type PatientFieldValidity = { [key in PatientPrototypeKeys]: boolean }
+
+function camelCaseToWords(s: string) {
+  const result = s.replace(/([A-Z])/g, ' $1');
+  return result.charAt(0).toUpperCase() + result.slice(1);
+}
+
 const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, submitButtonText, onSubmit, onCancel }) => {
+  const [isValid, setIsValid] = useState<PatientFieldValidity>({
+    name:       validationFunctions.name(defaultValues.name),
+    middleName: validationFunctions.middleName(defaultValues.middleName),
+    lastName:   validationFunctions.lastName(defaultValues.lastName),
+    age:        validationFunctions.age(defaultValues.age.toString()),
+    phone:      validationFunctions.phone(defaultValues.phone),
+    mail:       validationFunctions.mail(defaultValues.mail),
+    address:    validationFunctions.address(defaultValues.address),
+  });
+
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = (ev) => {
+    const field = ev.target.id as PatientPrototypeKeys;
+    const validationFunction = validationFunctions[field];
+
+    setIsValid((prev) => {
+      return { ...prev, [field]: validationFunction(ev.target.value) }
+    });
+  };
+
   return (
     <form
       className={clsx(
@@ -41,37 +69,33 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultValues, disabled, subm
       )}
       onSubmit={(ev) => {
         ev.preventDefault();
-        onSubmit(getPatientFromFormValues());
+        const isInputValid = Object.values(isValid).reduce((acc, cur) => acc && cur, true);
+        if (isInputValid) {
+          onSubmit(getPatientFromFormValues());
+        }
       }}
     >
-      <div>
-        <label htmlFor='name'>Name:</label>
-        <input id='name' type='text' defaultValue={defaultValues.name} disabled={!!disabled} />  
-      </div>
-      <div>
-        <label htmlFor='middleName'>Middle Name:</label>
-        <input id='middleName' type='text' defaultValue={defaultValues.middleName} disabled={!!disabled} />
-      </div>
-      <div>
-        <label htmlFor='lastName'>Last Name:</label>
-        <input id='lastName' type='text' defaultValue={defaultValues.lastName} disabled={!!disabled} />
-      </div>
-      <div>
-        <label htmlFor='age'>Age:</label>
-        <input id='age' type='text' defaultValue={defaultValues.age} disabled={!!disabled} />
-      </div>
-      <div>
-        <label htmlFor='phone'>Phone:</label>
-        <input id='phone' type='text' defaultValue={defaultValues.phone} disabled={!!disabled} />
-      </div>
-      <div>
-        <label htmlFor='mail'>Mail:</label>
-        <input id='mail' type='email' defaultValue={defaultValues.mail} disabled={!!disabled} />
-      </div>
-      <div>
-        <label htmlFor='address'>Address:</label>
-        <input id='address' type='text' defaultValue={defaultValues.address} disabled={!!disabled} />
-      </div>
+      {Object.keys(validationFunctions).map((key, i) => (
+        <div
+          key={i}
+          className={clsx("px-4 py-[1px]",
+            { "-ml-[2px] border-l-2 border-red text-red underline" : !isValid[key as PatientPrototypeKeys] }
+          )}
+        >
+          <label
+            htmlFor={key}
+          >
+            {camelCaseToWords(key)}
+          </label>
+          <input
+            id={key}
+            type="text"
+            defaultValue={defaultValues[key as PatientPrototypeKeys]}
+            disabled={!!disabled}
+            onChange={onChange}
+          />
+        </div>
+      ))}
       <div className="gap-4 mt-5">
         <button 
           type='submit'
