@@ -37,16 +37,34 @@ interface PatientService {
   deletePatient: DeletePatientFunction;
 }
 
+const validatePatientName = (name: string) => /^[a-zá-ú][a-zá-ú ]+$/gi.test(name);
+const validatePatientMiddleName = (middleName: string) => /^[a-zá-ú ]*$/gi.test(middleName);
+const validatePatientLastName = (name: string) => /^[a-zá-ú][a-zá-ú ]+$/gi.test(name);
+const validatePatientAge = (age: number) => age >= 0 && age < 150;
+const validatePatientPhone = (phone: string) => /\+{0,1}[\d\-]+$/g.test(phone);
+const validatePatientMail = (mail: string) => mail.includes('@') && mail.includes('.');
+const validatePatientAddress = (address: string) => address !== '';
+
+export const validationFunctions = {
+  name: validatePatientName,
+  middleName: validatePatientMiddleName,
+  lastName: validatePatientLastName,
+  age: validatePatientAge,
+  phone: validatePatientPhone,
+  mail: validatePatientMail,
+  address: validatePatientAddress,
+}
+
 const validatePatientPrototype: ValidatePatientProtoFunction = (patient) => {
   return (
-    /^[a-zá-ú][a-zá-ú ]+$/gi.test(patient.name) &&
-    /^[a-zá-ú ]*$/gi.test(patient.middleName) &&
-    /^[a-zá-ú][a-zá-ú ]+$/gi.test(patient.lastName) &&
-    patient.age >= 0 && patient.age < 150 &&
-    /\+{0,1}[\d\-]+$/g.test(patient.phone) &&
-    patient.mail.includes('@') && patient.mail.includes('.') &&
-    patient.address !== ''
-  );
+    validatePatientName(patient.name) &&
+    validatePatientMiddleName(patient.middleName) &&
+    validatePatientLastName(patient.lastName) &&
+    validatePatientAge(patient.age) &&
+    validatePatientPhone(patient.phone) &&
+    validatePatientMail(patient.mail) &&
+    validatePatientAddress(patient.address)
+  );  
 }
 
 const usePatients: () => PatientService = () => {
@@ -57,10 +75,10 @@ const usePatients: () => PatientService = () => {
     /* Simulate loading data from an API */
     const timerId = setTimeout(() => {
       setPatients(INITIAL_PATIENT_LIST);
-    }, 1000);
+    }, 1000);  
 
     return () => clearTimeout(timerId);
-  }, []);
+  }, []);  
 
   /* TODO: Provide feedback to the caller to indicate success or failure */
   const addPatient: AddPatientFunction = (patient) => {
@@ -69,15 +87,15 @@ const usePatients: () => PatientService = () => {
         const newId: number = prev.reduce(
           (maxId, patient) => Math.max(patient.id, maxId),
           -1
-        ) + 1;
+        ) + 1;  
 
         return [
           ...prev,
           { id: newId, ...patient }
-        ];
-      });
-    }
-  };
+        ];  
+      });  
+    }  
+  };  
 
   /* TODO: Provide feedback to the caller to indicate success or failure */
   const updatePatient: UpdatePatientFunction = (id, patient) => {
@@ -91,22 +109,22 @@ const usePatients: () => PatientService = () => {
           ...prev.slice(0, index),
           { id: id, ...patient },
           ...prev.slice(index+1),
-        ];
-      });
-    }
-  };
+        ];  
+      });  
+    }  
+  };  
 
   /* TODO: Provide feedback to the caller to indicate success or failure */
   const deletePatient: DeletePatientFunction = (id) => {
     setPatients((prev) => prev.filter((p) => p.id !== id));
-  };
+  };  
 
   return {
     patients: patients,
     addPatient: addPatient,
     updatePatient: updatePatient,
     deletePatient: deletePatient,
-  };
-};
+  };  
+};  
 
 export default usePatients;
