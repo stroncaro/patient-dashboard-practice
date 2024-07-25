@@ -79,7 +79,7 @@ export const PatientDashboard: React.FC = () => {
 
               if (modalState === 'edit') {
                 updatePatient(patients[selectedPatientIndex].id, returnedPatient);
-                setModalState('view');
+                setModalState('closed');
               }
             }}
             onCancel={closeModal}
