@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { PatientPrototype, PatientPrototypeKeys } from "../../../services/patients.types";
-import { validationFunctions } from "../../../services/patients";
+import { PatientPrototype, PatientPrototypeKeys } from "../../services/patients.types";
+import { validationFunctions } from "../../hooks/patients/usePatients";
 import { useState } from "react";
 
 interface PatientFormProps {

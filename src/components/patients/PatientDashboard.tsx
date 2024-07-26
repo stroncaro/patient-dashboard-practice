@@ -1,9 +1,9 @@
 import { useState } from "react";
 import clsx from "clsx";
-import usePatients from "../../services/patients";
+import usePatients from "../../hooks/patients/usePatients";
 
 import ModalBox from "../common/ModalBox";
-import PatientForm from "./PatientForm/PatientForm";
+import PatientForm from "./PatientForm";
 
 /* TODO: Add a confirmation dialog before saving changes */
 type PatientModalState = 'closed' | 'view' | 'edit';

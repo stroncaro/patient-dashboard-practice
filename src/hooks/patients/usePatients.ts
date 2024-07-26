@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { PatientPrototype, PatientList, PatientPrototypeKeys } from "./patients.types"
+import { PatientPrototype, PatientList, PatientPrototypeKeys } from "../../services/patients.types"
 
 /* TODO: Build an actual API */
 const INITIAL_PATIENT_LIST: PatientList = [

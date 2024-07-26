@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import PatientDashboard from "./PatientDashboard/PatientDashboard";
+import PatientDashboard from "./patients/PatientDashboard";
 
 export const AppContent: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
