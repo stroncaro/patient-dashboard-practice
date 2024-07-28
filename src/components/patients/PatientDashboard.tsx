@@ -31,7 +31,7 @@ export const PatientDashboard: React.FC = () => {
           const isSelected = patientIndex === selectedPatientIndex;
           return (
             <li 
-              key={patient.id}
+              key={patient.getId()}
               className={clsx(
                 "flex justify-between items-center px-4 my-1 border-l-2 hover:border-primary hover:cursor-pointer",
                 {
@@ -41,7 +41,7 @@ export const PatientDashboard: React.FC = () => {
               )}
               onClick={() => isSelected ? deselectPatient() : selectPatient(patientIndex)}
             >
-              {patient.lastName}, {patient.name} {patient.middleName}
+              {patient.getFullName()}
               {isSelected && (
                 <div className="flex gap-4 text-sm">
                   <button className="btn btn-md btn-white btn-hover-primary"
@@ -69,7 +69,7 @@ export const PatientDashboard: React.FC = () => {
       {modalState !== 'closed' && selectedPatientIndex !== null && (
         <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
           <PatientForm
-            defaultValues={patients[selectedPatientIndex]}
+            defaultPatient={patients[selectedPatientIndex]}
             disabled={modalState === 'view'}
             submitButtonText={modalState === 'view' ? 'Edit' : 'Save'}
             onSubmit={(returnedPatient) => {
@@ -78,7 +78,7 @@ export const PatientDashboard: React.FC = () => {
               }
 
               if (modalState === 'edit') {
-                updatePatient(patients[selectedPatientIndex].id, returnedPatient);
+                updatePatient(returnedPatient);
                 setModalState('closed');
               }
             }}
