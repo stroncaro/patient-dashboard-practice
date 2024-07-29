@@ -9,11 +9,11 @@ import PatientForm from "./PatientForm";
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
-  const { patients, loadPatientPageAsync, loadPatientPageWorking } = usePatients();
+  const { patients, loadingStates, fetchPatientPageAsync } = usePatients();
   const PATIENT_PAGE = 1;
 
   useEffect(() => {
-    loadPatientPageAsync(PATIENT_PAGE);
+    fetchPatientPageAsync(PATIENT_PAGE);
   }, [])
 
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
@@ -31,7 +31,7 @@ export const PatientDashboard: React.FC = () => {
         <h1 className="text-3xl font-bold">Patients</h1>
         <hr />
       </div>
-      {loadPatientPageWorking
+      {loadingStates.fetch
         ? <p>Loading...</p>
         : <ul>
           {patients.map((patient, patientIndex) => {

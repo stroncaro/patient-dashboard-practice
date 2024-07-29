@@ -2,10 +2,14 @@ import { useRef, useState } from "react"
 import Patient, { PatientList } from "../../services/patients/PatientModel"
 import { MockPatientService as PatientServiceImplementation, PatientService } from "../../services/patients/patients";
 
+type PatientsHookFunctions = "fetch" | "add" | "update" | "delete";
+type LoadingStates = Record<PatientsHookFunctions, boolean>;
+type ProcessIds = Record<PatientsHookFunctions, number>;
+
 interface PatientsReactHook {
   patients: PatientList;
-  loadPatientPageAsync: (page: number) => void;
-  loadPatientPageWorking: boolean;
+  loadingStates: LoadingStates;
+  fetchPatientPageAsync: (page: number) => void;
   addPatientAsync: (patient: Patient) => void;
   updatePatientAsync: (patient: Patient) => void;
   deletePatientAsync: (id: number) => void;
@@ -14,27 +18,33 @@ interface PatientsReactHook {
 const usePatients: () => PatientsReactHook = () => {
   const Service = PatientServiceImplementation.getInstance() as PatientService;
   const [patients, setPatients] = useState<PatientList>([]);
-  const [loadPatientPageWorking, setLoadPatientPageWorking] = useState<boolean>(false);
-  const loadPatientPageProcessId = useRef<number>(0);
+  const [loadingStates, setLoadingStates] = useState<LoadingStates>({
+    fetch: false,
+    add: false,
+    update: false,
+    delete: false,
+  });
+  const processIds = useRef<ProcessIds>({
+    fetch: 0,
+    add: 0,
+    update: 0,
+    delete: 0,
+  });
   
   const loadPatientPageAsync = async (page: number) => {
     /* TODO: handle pagination */
     const id = Date.now();
-    console.log(`loadPatientPageAsync called. Id: ${id}`);
 
-    loadPatientPageProcessId.current = id;
-    if (!loadPatientPageWorking) {
-      console.log(`${id}: set loading to true`);
-      setLoadPatientPageWorking(true);
+    processIds.current.fetch = id;
+    if (!loadingStates.fetch) {
+      setLoadingStates(prev => ({ ...prev, fetch: true }));
     }
 
     const fetchedPatients = await Service.getPatients();
-    console.log(`${id}: finished fetching. current id is ${loadPatientPageProcessId.current}`);
 
-    if (loadPatientPageProcessId.current === id) {
-      console.log(`${id}: setting patients and loading to false`);
+    if (processIds.current.fetch === id) {
       setPatients(fetchedPatients);
-      setLoadPatientPageWorking(false);
+      setLoadingStates(prev => ({ ...prev, fetch: false }));
     }
   }
 
@@ -52,8 +62,8 @@ const usePatients: () => PatientsReactHook = () => {
 
   return {
     patients: patients,
-    loadPatientPageAsync: loadPatientPageAsync,
-    loadPatientPageWorking: loadPatientPageWorking,
+    loadingStates: loadingStates,
+    fetchPatientPageAsync: loadPatientPageAsync,
     addPatientAsync: addPatientAsync,
     updatePatientAsync: updatePatientAsync,
     deletePatientAsync: deletePatientAsync,
