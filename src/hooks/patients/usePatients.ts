@@ -11,7 +11,7 @@ interface PatientsReactHook {
   loadingStates: LoadingStates;
   fetchPatientPageAsync: (page: number) => void;
   addPatientAsync: (patient: Patient) => void;
-  updatePatientAsync: (patient: Patient) => void;
+  updatePatientAsync: (patient: Patient) => Promise<boolean>;
   deletePatientAsync: (id: number) => void;
 }
 
@@ -65,11 +65,13 @@ const usePatients: () => PatientsReactHook = () => {
 
     try {
       await Service.updatePatient(patient);
-      setLoadingStates(prev => ({ ...prev, update: false }));
-      await fetchPatientPageAsync(lastLoadedPage.current);
     } catch (error) {
-      /* TODO: do something meaningful with the error */
+      return false;
     }
+    
+    setLoadingStates(prev => ({ ...prev, update: false }));
+    fetchPatientPageAsync(lastLoadedPage.current);
+    return true;
   }
 
   const deletePatientAsync = async (id: number) => {

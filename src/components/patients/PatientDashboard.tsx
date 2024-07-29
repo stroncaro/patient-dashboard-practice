@@ -92,9 +92,16 @@ export const PatientDashboard: React.FC = () => {
               }
 
               if (modalState === 'edit') {
-                updatePatientAsync(returnedPatient);
-                /* TODO: close modal on success, otherwise show failure */
-                // setModalState('closed');
+                updatePatientAsync(returnedPatient)
+                  .then((success) => {
+                    if (success) {
+                      /* TODO: use a modal notification to show success */
+                      setModalState('closed');
+                    } else {
+                      /* TODO: use a modal notification to notify of failure */
+                      alert("Update failed!");
+                    }
+                  });
               }
             }}
             submitButtonDisabled={modalState === 'edit' && loadingStates.update}
