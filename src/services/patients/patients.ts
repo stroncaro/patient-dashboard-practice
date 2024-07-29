@@ -1,4 +1,4 @@
-import { Patient, PatientRecord, PatientList } from "./PatientModel";
+import Patient, { PatientRecord, PatientList } from "./PatientModel";
 
 const INITIAL_PATIENT_DATA: PatientRecord[] = [
   {
@@ -8,7 +8,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Fiorito",
     age: 53,
     phone: "9999-9999",
-    mail: "marta@fiorito.com",
+    email: "marta@fiorito.com",
     address: "Some Street 1234",
   },
   {
@@ -18,7 +18,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Perez",
     age: 15,
     phone: "9876-5432",
-    mail: "capo_el10@yahoo.com",
+    email: "capo_el10@yahoo.com",
     address: "Some Other Street 5678",
   },
   {
@@ -28,7 +28,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Lopez",
     age: 42,
     phone: "1234-5678",
-    mail: "ana.lopez@example.com",
+    email: "ana.lopez@example.com",
     address: "Avenue 42",
   },
   {
@@ -38,7 +38,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Gomez",
     age: 29,
     phone: "2345-6789",
-    mail: "carlos.gomez@example.com",
+    email: "carlos.gomez@example.com",
     address: "Baker Street 221B",
   },
   {
@@ -48,7 +48,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Martinez",
     age: 36,
     phone: "3456-7890",
-    mail: "lucia.martinez@example.com",
+    email: "lucia.martinez@example.com",
     address: "Elm Street 10",
   },
   {
@@ -58,7 +58,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Cruz",
     age: 61,
     phone: "4567-8901",
-    mail: "fernando.cruz@example.com",
+    email: "fernando.cruz@example.com",
     address: "Highway 56",
   },
   {
@@ -68,7 +68,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Reyes",
     age: 23,
     phone: "5678-9012",
-    mail: "isabella.reyes@example.com",
+    email: "isabella.reyes@example.com",
     address: "Main Street 100",
   },
   {
@@ -78,7 +78,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Torres",
     age: 50,
     phone: "6789-0123",
-    mail: "sergio.torres@example.com",
+    email: "sergio.torres@example.com",
     address: "Green Street 45",
   },
   {
@@ -88,7 +88,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Fernandez",
     age: 31,
     phone: "7890-1234",
-    mail: "valeria.fernandez@example.com",
+    email: "valeria.fernandez@example.com",
     address: "River Road 21",
   },
   {
@@ -98,7 +98,7 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Alonso",
     age: 28,
     phone: "8901-2345",
-    mail: "javier.alonso@example.com",
+    email: "javier.alonso@example.com",
     address: "Oak Street 7",
   },
   {
@@ -108,24 +108,26 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
     lastName: "Gutierrez",
     age: 45,
     phone: "9012-3456",
-    mail: "carmen.gutierrez@example.com",
+    email: "carmen.gutierrez@example.com",
     address: "Sunset Boulevard 5",
   },
 ];
 
-interface PatientService {
-  getPatients: (limit: number, skip: number) => Promise<PatientList>;
+export interface PatientService {
+  getPatients: (limit?: number, skip?: number) => Promise<PatientList>;
   addPatient: (data: PatientRecord) => Promise<number>;
   deletePatient: (id: number) => Promise<boolean>;
   updatePatient: (id: number, data: PatientRecord) => Promise<boolean>;
 }
 
-class MockPatientService implements PatientService {
+export class MockPatientService implements PatientService {
   private static instance?: MockPatientService;
-  private serverPatients: PatientRecord[];
+
+  private readonly SERVER_DELAY_MS = 1000;
+  private patientsOnServer: PatientRecord[];
   
   private constructor () {
-    this.serverPatients = INITIAL_PATIENT_DATA;
+    this.patientsOnServer = INITIAL_PATIENT_DATA;
   }
   
   static getInstance(): PatientService {
@@ -133,8 +135,14 @@ class MockPatientService implements PatientService {
     return MockPatientService.instance;
   }
   
-  getPatients(limit: number = 10, skip: number = 0): Promise<PatientList> {
-    throw new Error("Not Implemented");
+  async getPatients(limit: number = 10, skip: number = 0): Promise<PatientList> {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        const records = this.patientsOnServer.slice(skip, skip + limit);
+        const patients: PatientList = records.map((record) => Patient.fromRecord(record));
+        res(patients);
+      }, this.SERVER_DELAY_MS);
+    });
   }
 
   addPatient(data: PatientRecord): Promise<number> {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 import usePatients from "../../hooks/patients/usePatients";
 
@@ -9,7 +9,12 @@ import PatientForm from "./PatientForm";
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
-  const { patients, updatePatient } = usePatients();
+  const { patients, loadPatientPageAsync } = usePatients();
+  const PATIENT_PAGE = 1;
+
+  useEffect(() => {
+    loadPatientPageAsync(PATIENT_PAGE);
+  }, [])
 
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
   const selectPatient: (patientIndex: number) => void = (patientIndex) => setSelectedPatientIndex(patientIndex);    
@@ -17,7 +22,7 @@ export const PatientDashboard: React.FC = () => {
   
   const [modalState, setModalState] = useState<PatientModalState>('closed');
   const openViewDialog: () => void = () => setModalState('view');
-  const openEditDialog: () => void = () => setModalState('edit');
+  // const openEditDialog: () => void = () => setModalState('edit');
   const closeModal: () => void = () => setModalState('closed');
   
   return (
@@ -52,14 +57,14 @@ export const PatientDashboard: React.FC = () => {
                   >
                     View
                   </button>
-                  <button className="btn btn-md btn-white btn-hover-primary"
+                  {/* <button className="btn btn-md btn-white btn-hover-primary"
                     onClick={(ev) => {
                       ev.stopPropagation();
                       openEditDialog();
                     }}
                   >
                     Edit
-                  </button>
+                  </button> */}
                 </div>
               )}
             </li>
@@ -77,10 +82,10 @@ export const PatientDashboard: React.FC = () => {
                 setModalState('edit');
               }
 
-              if (modalState === 'edit') {
+              /* if (modalState === 'edit') {
                 updatePatient(returnedPatient);
                 setModalState('closed');
-              }
+              } */
             }}
             onCancel={closeModal}
           />
