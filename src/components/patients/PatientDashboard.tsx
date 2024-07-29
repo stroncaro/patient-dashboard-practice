@@ -9,7 +9,7 @@ import PatientForm from "./PatientForm";
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
-  const { patients, loadPatientPageAsync } = usePatients();
+  const { patients, loadPatientPageAsync, loadPatientPageWorking } = usePatients();
   const PATIENT_PAGE = 1;
 
   useEffect(() => {
@@ -31,46 +31,49 @@ export const PatientDashboard: React.FC = () => {
         <h1 className="text-3xl font-bold">Patients</h1>
         <hr />
       </div>
-      <ul>
-        {patients.map((patient, patientIndex) => {
-          const isSelected = patientIndex === selectedPatientIndex;
-          return (
-            <li 
-              key={patient.getId()}
-              className={clsx(
-                "flex justify-between items-center px-4 my-1 border-l-2 hover:border-primary hover:cursor-pointer",
-                {
-                  "border-transparent" : !isSelected,
-                  "border-black" : isSelected,
-                }                
-              )}
-              onClick={() => isSelected ? deselectPatient() : selectPatient(patientIndex)}
-            >
-              {patient.getFullName()}
-              {isSelected && (
-                <div className="flex gap-4 text-sm">
-                  <button className="btn btn-md btn-white btn-hover-primary"
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      openViewDialog();
-                    }}
-                  >
-                    View
-                  </button>
-                  {/* <button className="btn btn-md btn-white btn-hover-primary"
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      openEditDialog();
-                    }}
-                  >
-                    Edit
-                  </button> */}
-                </div>
-              )}
-            </li>
+      {loadPatientPageWorking
+        ? <p>Loading...</p>
+        : <ul>
+          {patients.map((patient, patientIndex) => {
+            const isSelected = patientIndex === selectedPatientIndex;
+            return (
+              <li 
+                key={patient.getId()}
+                className={clsx(
+                  "flex justify-between items-center px-4 my-1 border-l-2 hover:border-primary hover:cursor-pointer",
+                  {
+                    "border-transparent" : !isSelected,
+                    "border-black" : isSelected,
+                  }                
+                )}
+                onClick={() => isSelected ? deselectPatient() : selectPatient(patientIndex)}
+              >
+                {patient.getFullName()}
+                {isSelected && (
+                  <div className="flex gap-4 text-sm">
+                    <button className="btn btn-md btn-white btn-hover-primary"
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        openViewDialog();
+                      }}
+                    >
+                      View
+                    </button>
+                    {/* <button className="btn btn-md btn-white btn-hover-primary"
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        openEditDialog();
+                      }}
+                    >
+                      Edit
+                    </button> */}
+                  </div>
+                )}
+              </li>
+            )}
           )}
-        )}
-      </ul>
+        </ul>
+      }
       {modalState !== 'closed' && selectedPatientIndex !== null && (
         <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
           <PatientForm

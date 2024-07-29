@@ -5,6 +5,7 @@ import { MockPatientService as PatientServiceImplementation, PatientService } fr
 interface PatientsReactHook {
   patients: PatientList;
   loadPatientPageAsync: (page: number) => void;
+  loadPatientPageWorking: boolean;
   addPatientAsync: (patient: Patient) => void;
   updatePatientAsync: (patient: Patient) => void;
   deletePatientAsync: (id: number) => void;
@@ -13,10 +14,23 @@ interface PatientsReactHook {
 const usePatients: () => PatientsReactHook = () => {
   const Service = PatientServiceImplementation.getInstance() as PatientService;
   const [patients, setPatients] = useState<PatientList>([]);
+  const [loadPatientPageWorking, setLoadPatientPageWorking] = useState<boolean>(false);
+  const [loadPatientPageProcessId, setLoadPatientProcessId] = useState<number>(0);
   
   const loadPatientPageAsync = async (page: number) => {
+    const id = Date.now();
+    setLoadPatientProcessId(id);
+
+    if (!loadPatientPageWorking) {
+      setLoadPatientPageWorking(true);
+    }
+
     const fetchedPatients = await Service.getPatients();
-    setPatients(fetchedPatients);
+
+    if (loadPatientPageProcessId === id) {
+      setPatients(fetchedPatients);
+      setLoadPatientPageWorking(false);
+    }
   }
 
   const addPatientAsync = async (patient: Patient) => {
@@ -34,6 +48,7 @@ const usePatients: () => PatientsReactHook = () => {
   return {
     patients: patients,
     loadPatientPageAsync: loadPatientPageAsync,
+    loadPatientPageWorking: loadPatientPageWorking,
     addPatientAsync: addPatientAsync,
     updatePatientAsync: updatePatientAsync,
     deletePatientAsync: deletePatientAsync,
