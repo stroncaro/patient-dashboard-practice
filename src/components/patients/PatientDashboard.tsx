@@ -9,7 +9,7 @@ import PatientForm from "./PatientForm";
 type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
-  const { patients, loadingStates, fetchPatientPageAsync } = usePatients();
+  const { patients, loadingStates, fetchPatientPageAsync, updatePatientAsync } = usePatients();
   const PATIENT_PAGE = 1;
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const PatientDashboard: React.FC = () => {
   
   const [modalState, setModalState] = useState<PatientModalState>('closed');
   const openViewDialog: () => void = () => setModalState('view');
-  // const openEditDialog: () => void = () => setModalState('edit');
+  const openEditDialog: () => void = () => setModalState('edit');
   const closeModal: () => void = () => setModalState('closed');
   
   return (
@@ -59,14 +59,14 @@ export const PatientDashboard: React.FC = () => {
                     >
                       View
                     </button>
-                    {/* <button className="btn btn-md btn-white btn-hover-primary"
+                    <button className="btn btn-md btn-white btn-hover-primary"
                       onClick={(ev) => {
                         ev.stopPropagation();
                         openEditDialog();
                       }}
                     >
                       Edit
-                    </button> */}
+                    </button>
                   </div>
                 )}
               </li>
@@ -78,18 +78,26 @@ export const PatientDashboard: React.FC = () => {
         <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
           <PatientForm
             defaultPatient={patients[selectedPatientIndex]}
-            disabled={modalState === 'view'}
-            submitButtonText={modalState === 'view' ? 'Edit' : 'Save'}
+            inputDisabled={modalState === 'view'}
+            submitButtonText={
+              modalState === 'view'
+              ? 'Edit'
+              : loadingStates.update /* modalState === 'edit' */
+                ? 'Wait...'
+                : 'Save'
+            }
             onSubmit={(returnedPatient) => {
               if (modalState === 'view') {
                 setModalState('edit');
               }
 
-              /* if (modalState === 'edit') {
-                updatePatient(returnedPatient);
-                setModalState('closed');
-              } */
+              if (modalState === 'edit') {
+                updatePatientAsync(returnedPatient);
+                /* TODO: close modal on success, otherwise show failure */
+                // setModalState('closed');
+              }
             }}
+            submitButtonDisabled={modalState === 'edit' && loadingStates.update}
             onCancel={closeModal}
           />
         </ModalBox>

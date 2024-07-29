@@ -18,6 +18,7 @@ interface PatientsReactHook {
 const usePatients: () => PatientsReactHook = () => {
   const Service = PatientServiceImplementation.getInstance() as PatientService;
   const [patients, setPatients] = useState<PatientList>([]);
+  const lastLoadedPage = useRef<number>(0);
   const [loadingStates, setLoadingStates] = useState<LoadingStates>({
     fetch: false,
     add: false,
@@ -31,8 +32,10 @@ const usePatients: () => PatientsReactHook = () => {
     delete: 0,
   });
   
-  const loadPatientPageAsync = async (page: number) => {
+  const fetchPatientPageAsync = async (page: number) => {
     /* TODO: handle pagination */
+    lastLoadedPage.current = page;
+
     const id = Date.now();
 
     processIds.current.fetch = id;
@@ -53,7 +56,20 @@ const usePatients: () => PatientsReactHook = () => {
   }
 
   const updatePatientAsync = async (patient: Patient) => {
-    throw Error("Not implemented");
+    const id = Date.now();
+
+    processIds.current.update = id;
+    if (!loadingStates.update) {
+      setLoadingStates(prev => ({ ...prev, update: true }));
+    }
+
+    try {
+      await Service.updatePatient(patient);
+      setLoadingStates(prev => ({ ...prev, update: false }));
+      await fetchPatientPageAsync(lastLoadedPage.current);
+    } catch (error) {
+      /* TODO: do something meaningful with the error */
+    }
   }
 
   const deletePatientAsync = async (id: number) => {
@@ -63,7 +79,7 @@ const usePatients: () => PatientsReactHook = () => {
   return {
     patients: patients,
     loadingStates: loadingStates,
-    fetchPatientPageAsync: loadPatientPageAsync,
+    fetchPatientPageAsync: fetchPatientPageAsync,
     addPatientAsync: addPatientAsync,
     updatePatientAsync: updatePatientAsync,
     deletePatientAsync: deletePatientAsync,

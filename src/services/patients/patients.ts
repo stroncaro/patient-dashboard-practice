@@ -117,17 +117,17 @@ export interface PatientService {
   getPatients: (limit?: number, skip?: number) => Promise<PatientList>;
   addPatient: (data: PatientRecord) => Promise<number>;
   deletePatient: (id: number) => Promise<boolean>;
-  updatePatient: (id: number, data: PatientRecord) => Promise<boolean>;
+  updatePatient: (patient: Patient) => Promise<boolean>;
 }
 
 export class MockPatientService implements PatientService {
   private static instance?: MockPatientService;
 
-  private readonly SERVER_DELAY_MS = 1000;
-  private patientsOnServer: PatientRecord[];
+  private readonly SIMULATED_SERVER_DELAY_MS = 1000;
+  private patients: PatientRecord[];
   
   private constructor () {
-    this.patientsOnServer = INITIAL_PATIENT_DATA;
+    this.patients = INITIAL_PATIENT_DATA;
   }
   
   static getInstance(): PatientService {
@@ -138,10 +138,10 @@ export class MockPatientService implements PatientService {
   async getPatients(limit: number = 10, skip: number = 0): Promise<PatientList> {
     return new Promise((res, rej) => {
       setTimeout(() => {
-        const records = this.patientsOnServer.slice(skip, skip + limit);
+        const records = this.patients.slice(skip, skip + limit);
         const patients: PatientList = records.map((record) => Patient.fromRecord(record));
         res(patients);
-      }, this.SERVER_DELAY_MS);
+      }, this.SIMULATED_SERVER_DELAY_MS);
     });
   }
 
@@ -152,7 +152,23 @@ export class MockPatientService implements PatientService {
     throw new Error("Not Implemented");
   }
 
-  updatePatient(id: number, data: PatientRecord): Promise<boolean> {
-    throw new Error("Not Implemented");
+  async updatePatient(patient: Patient): Promise<boolean> {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        if (!patient.isValid()) {
+          rej(new Error("Invalid patient"));
+        }
+
+        const id = patient.getId();
+        const index = this.patients.findIndex(record => id === record.id);
+        if (index === -1) {
+          rej(new Error("Patient not found"));
+        }
+
+        this.patients[index] = patient.getRecord();
+        res(true);
+
+      }, this.SIMULATED_SERVER_DELAY_MS);
+    })
   }
 }

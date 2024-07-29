@@ -7,10 +7,11 @@ interface PatientFormProps {
   submitButtonText?: string;
   onSubmit: (patient: Patient) => void;
   onCancel: () => void;
-  disabled?: boolean;
+  inputDisabled?: boolean;
+  submitButtonDisabled: boolean;
 }
 
-const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, disabled, submitButtonText, onSubmit: _onSubmit, onCancel }) => {
+const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled: disabled, submitButtonText, submitButtonDisabled, onSubmit: _onSubmit, onCancel }) => {
   const [patient, setPatient] = useState<Patient>(defaultPatient);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = () => {
@@ -81,8 +82,13 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, disabled, sub
       ))}
       <div className="gap-4 mt-5">
         <button 
-          type='submit'
-          className="btn btn-md border-secondary text-secondary hover:bg-secondary hover:text-white"
+          type={submitButtonDisabled ? 'button' : 'submit'}
+          className={clsx("btn btn-md",
+            {
+              "border-secondary text-secondary hover:bg-secondary hover:text-white": !submitButtonDisabled,
+              "border-[#444444] text-white bg-[#444444] cursor-pointer": submitButtonDisabled,
+            }
+          )}
         >
           {submitButtonText ? submitButtonText : 'Submit'}
         </button>
