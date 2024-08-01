@@ -3,16 +3,16 @@ import Patient, { PatientRecord } from "../../models/patient";
 import { useState } from "react";
 
 interface PatientFormProps {
-  defaultPatient: Patient;
+  patient: Patient;
   submitButtonText?: string;
   onSubmit: (patient: Patient) => void;
   onCancel: () => void;
-  inputDisabled?: boolean;
-  submitButtonDisabled: boolean;
+  disableInput?: boolean;
+  disableSubmit: boolean;
 }
 
-const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled: disabled, submitButtonText, submitButtonDisabled, onSubmit: _onSubmit, onCancel }) => {
-  const [patient, setPatient] = useState<Patient>(defaultPatient);
+const PatientForm: React.FC<PatientFormProps> = ({ patient: defaultPatient, disableInput, submitButtonText, disableSubmit, onSubmit: _onSubmit, onCancel }) => {
+  const [patient, setPatient] = useState<Patient>(defaultPatient.deepCopy());
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = () => {
     setPatient(getPatientFromFormValues());
@@ -46,8 +46,9 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled
         "w-96 [&>div]:flex [&>div]:justify-between [&>div:last-child]:justify-end [&>div]:items-baseline [&>div]:mb-1",
         "[&_input]:max-w-[50%] [&_input]:px-2 [&_input]:py-1 text-sm",
         {
-          "[&_input]:bg-black [&_input]:bg-opacity-5 [&_input:focus]:bg-primary [&_input:focus]:bg-opacity-20 [&_input:focus-visible]:outline-primary": !disabled,
+          "[&_input]:bg-black [&_input]:bg-opacity-5 [&_input:focus]:bg-primary [&_input:focus]:bg-opacity-20 [&_input:focus-visible]:outline-primary": !disableInput,
         },
+        "[&>div:not(:last-child)]:px-4 [&>div:not(:last-child)]:py-[1px]",
       )}
       onSubmit={onSubmit}
     >
@@ -62,7 +63,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled
       ].map((inputData, i) => (
         <div
           key={i}
-          className={clsx("px-4 py-[1px]",
+          className={clsx(
             { "-ml-[2px] border-l-2 border-red text-red underline" : !inputData.isValid }
           )}
         >
@@ -75,18 +76,19 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled
             id={inputData.id}
             type="text"
             defaultValue={inputData.defaultValue}
-            disabled={!!disabled}
+            disabled={!!disableInput}
             onChange={onChange}
           />
         </div>
       ))}
+      
       <div className="gap-4 mt-5">
         <button 
-          type={submitButtonDisabled ? 'button' : 'submit'}
+          type={disableSubmit ? 'button' : 'submit'}
           className={clsx("btn btn-md",
             {
-              "border-secondary text-secondary hover:bg-secondary hover:text-white": !submitButtonDisabled,
-              "border-[#444444] text-white bg-[#444444] cursor-pointer": submitButtonDisabled,
+              "border-secondary text-secondary hover:bg-secondary hover:text-white": !disableSubmit,
+              "border-[#444444] text-white bg-[#444444] cursor-pointer": disableSubmit,
             }
           )}
         >

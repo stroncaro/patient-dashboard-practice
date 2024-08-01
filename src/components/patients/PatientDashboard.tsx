@@ -76,8 +76,8 @@ export const PatientDashboard: React.FC = () => {
       {modalState !== 'closed' && selectedPatientIndex !== null && (
         <ModalBox closeCallback={closeModal} title={modalState === 'view' ? 'View patient information' : 'Edit patient information'}>
           <PatientForm
-            defaultPatient={patients[selectedPatientIndex]}
-            inputDisabled={modalState === 'view'}
+            patient={patients[selectedPatientIndex]}
+            disableInput={modalState === 'view'}
             submitButtonText={
               modalState === 'view'
               ? 'Edit'
@@ -103,7 +103,7 @@ export const PatientDashboard: React.FC = () => {
                   });
               }
             }}
-            submitButtonDisabled={modalState === 'edit' && loadingStates.update}
+            disableSubmit={modalState === 'edit' && loadingStates.update}
             onCancel={closeModal}
           />
         </ModalBox>

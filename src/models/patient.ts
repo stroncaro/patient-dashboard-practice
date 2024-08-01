@@ -33,7 +33,7 @@ interface PatientInterface {
 
   getFullName: () => string;
   getRecord: () => PatientRecord;
-  getCopy: () => Patient;
+  deepCopy: () => Patient;
 }
 
 export default class Patient implements PatientInterface {
@@ -115,7 +115,16 @@ export default class Patient implements PatientInterface {
     return new Patient(data.id, data.name, data.middleName, data.lastName, data.age, data.phone, data.email, data.address);
   }
 
-  getCopy() {
-    return new Patient(this.id, this.name, this.middleName, this.lastName, this.age, this.phone, this.email, this.address);
+  deepCopy() {
+    return new Patient(
+      this.id,
+      this.name,
+      this.middleName,
+      this.lastName,
+      this.age,
+      this.phone,
+      this.email,
+      this.address
+    );
   }
 }
