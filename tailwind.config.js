@@ -11,6 +11,8 @@ export default {
       primary: '#0284C7',
       black: '#042F2E',
       secondary: '#DB2777',
+      red: '#B91C1C',
+      green: '#4D7C0F',
     },
     extend: {},
   },
