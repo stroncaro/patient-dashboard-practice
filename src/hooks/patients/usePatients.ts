@@ -1,15 +1,14 @@
-import { useRef, useState } from "react"
-import Patient, { PatientList } from "../../services/patients/PatientModel"
+import { useState } from "react"
+import Patient, { PatientList } from "../../models/patient"
 import { MockPatientService as PatientServiceImplementation, PatientService } from "../../services/patients/patients";
 
 type PatientsHookFunctions = "fetch" | "add" | "update" | "delete";
 type LoadingStates = Record<PatientsHookFunctions, boolean>;
-type ProcessIds = Record<PatientsHookFunctions, number>;
 
 interface PatientsReactHook {
   patients: PatientList;
   loadingStates: LoadingStates;
-  fetchPatientPageAsync: (page: number) => void;
+  fetchPatientPageAsync: () => void;
   addPatientAsync: (patient: Patient) => void;
   updatePatientAsync: (patient: Patient) => Promise<boolean>;
   deletePatientAsync: (id: number) => void;
@@ -18,47 +17,29 @@ interface PatientsReactHook {
 const usePatients: () => PatientsReactHook = () => {
   const Service = PatientServiceImplementation.getInstance() as PatientService;
   const [patients, setPatients] = useState<PatientList>([]);
-  const lastLoadedPage = useRef<number>(0);
   const [loadingStates, setLoadingStates] = useState<LoadingStates>({
     fetch: false,
     add: false,
     update: false,
     delete: false,
   });
-  const processIds = useRef<ProcessIds>({
-    fetch: 0,
-    add: 0,
-    update: 0,
-    delete: 0,
-  });
   
-  const fetchPatientPageAsync = async (page: number) => {
-    /* TODO: handle pagination */
-    lastLoadedPage.current = page;
-
-    const id = Date.now();
-
-    processIds.current.fetch = id;
+  /* TODO: handle pagination */
+  const fetchPatientPageAsync = async () => {
     if (!loadingStates.fetch) {
       setLoadingStates(prev => ({ ...prev, fetch: true }));
     }
 
     const fetchedPatients = await Service.getPatients();
-
-    if (processIds.current.fetch === id) {
-      setPatients(fetchedPatients);
-      setLoadingStates(prev => ({ ...prev, fetch: false }));
-    }
+    setPatients(fetchedPatients);
+    setLoadingStates(prev => ({ ...prev, fetch: false }));
   }
 
-  const addPatientAsync = async (patient: Patient) => {
+  const addPatientAsync = async (_patient: Patient) => {
     throw Error("Not implemented");
   }
 
   const updatePatientAsync = async (patient: Patient) => {
-    const id = Date.now();
-
-    processIds.current.update = id;
     if (!loadingStates.update) {
       setLoadingStates(prev => ({ ...prev, update: true }));
     }
@@ -70,11 +51,11 @@ const usePatients: () => PatientsReactHook = () => {
     }
     
     setLoadingStates(prev => ({ ...prev, update: false }));
-    fetchPatientPageAsync(lastLoadedPage.current);
+    fetchPatientPageAsync();
     return true;
   }
 
-  const deletePatientAsync = async (id: number) => {
+  const deletePatientAsync = async (_id: number) => {
     throw Error("Not implemented");
   }
 

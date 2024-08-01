@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import Patient, { PatientRecord } from "../../services/patients/PatientModel";
+import Patient, { PatientRecord } from "../../models/patient";
 import { useState } from "react";
 
 interface PatientFormProps {

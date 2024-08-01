@@ -1,4 +1,12 @@
-import Patient, { PatientRecord, PatientList } from "./PatientModel";
+import Patient, { PatientRecord, PatientList } from "../../models/patient";
+import delay from "../../utils/delay";
+
+export interface PatientService {
+  getPatients: (limit?: number, skip?: number) => Promise<PatientList>;
+  addPatient: (data: PatientRecord) => Promise<number>;
+  deletePatient: (id: number) => Promise<boolean>;
+  updatePatient: (patient: Patient) => Promise<boolean>;
+}
 
 const INITIAL_PATIENT_DATA: PatientRecord[] = [
   {
@@ -113,62 +121,52 @@ const INITIAL_PATIENT_DATA: PatientRecord[] = [
   },
 ];
 
-export interface PatientService {
-  getPatients: (limit?: number, skip?: number) => Promise<PatientList>;
-  addPatient: (data: PatientRecord) => Promise<number>;
-  deletePatient: (id: number) => Promise<boolean>;
-  updatePatient: (patient: Patient) => Promise<boolean>;
-}
+const SERVER_DELAY = 1;
 
 export class MockPatientService implements PatientService {
-  private static instance?: MockPatientService;
-
-  private readonly SIMULATED_SERVER_DELAY_MS = 1000;
-  private patients: PatientRecord[];
+  private static _instance?: MockPatientService;
+  private _patients: PatientRecord[];
+  
+  /* TODO: funcion generadora de id */
   
   private constructor () {
-    this.patients = INITIAL_PATIENT_DATA;
+    this._patients = INITIAL_PATIENT_DATA;
   }
   
   static getInstance(): PatientService {
-    MockPatientService.instance ??= new MockPatientService();
-    return MockPatientService.instance;
+    MockPatientService._instance ??= new MockPatientService();
+    return MockPatientService._instance;
   }
   
   async getPatients(limit: number = 10, skip: number = 0): Promise<PatientList> {
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        const records = this.patients.slice(skip, skip + limit);
-        const patients: PatientList = records.map((record) => Patient.fromRecord(record));
-        res(patients);
-      }, this.SIMULATED_SERVER_DELAY_MS);
-    });
+    await delay(SERVER_DELAY);
+    const records = this._patients.slice(skip, skip + limit);
+    return records.map((record) => Patient.fromRecord(record));
   }
 
-  addPatient(data: PatientRecord): Promise<number> {
-    throw new Error("Not Implemented");
-  }
-  deletePatient(id: number): Promise<boolean> {
-    throw new Error("Not Implemented");
-  }
-
+  
   async updatePatient(patient: Patient): Promise<boolean> {
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        if (!patient.isValid()) {
-          rej(new Error("Invalid patient"));
-        }
+    await delay(SERVER_DELAY);
+    
+    if (!patient.isValid()) {
+      throw new Error("Invalid patient");
+    }
 
-        const id = patient.getId();
-        const index = this.patients.findIndex(record => id === record.id);
-        if (index === -1) {
-          rej(new Error("Patient not found"));
-        }
+    const id = patient.getId();
+    const index = this._patients.findIndex(record => id === record.id);
+    if (index === -1) {
+      throw new Error("Patient not found");
+    }
+    
+    this._patients[index] = patient.getRecord();
+    return true;
+  }
 
-        this.patients[index] = patient.getRecord();
-        res(true);
+  async addPatient(_data: PatientRecord): Promise<number> {
+    throw new Error("Not Implemented");
+  }
 
-      }, this.SIMULATED_SERVER_DELAY_MS);
-    })
+  async deletePatient(_id: number): Promise<boolean> {
+    throw new Error("Not Implemented");
   }
 }
