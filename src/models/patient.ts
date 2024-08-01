@@ -12,22 +12,14 @@ export type PatientRecord = {
 export type PatientList = Patient[];
 
 interface PatientInterface {
-  getId: () => number | null;
-  getName: () => string;
-  getMiddleName: () => string;
-  getLastName: () => string;
-  getAge: () => number;
-  getPhone: () => string;
-  getEmail: () => string;
-  getAddress: () => string;
-
-  setName: (name: string) => Patient;
-  setMiddleName: (middleName: string) => Patient;
-  setLastName: (lastName: string) => Patient;
-  setAge: (age: number) => Patient;
-  setPhone: (phone: string) => Patient;
-  setEmail: (email: string) => Patient;
-  setAddress: (address: string) => Patient;
+  readonly id: number | null;
+  name: string;
+  middleName: string;
+  lastName: string;
+  age: number;
+  phone: string;
+  email: string;
+  address: string;
 
   validateId: () => boolean;
   validateName: () => boolean;
@@ -41,17 +33,18 @@ interface PatientInterface {
 
   getFullName: () => string;
   getRecord: () => PatientRecord;
+  getCopy: () => Patient;
 }
 
 export default class Patient implements PatientInterface {
-  private readonly id: number | null;
-  private readonly name: string;
-  private readonly middleName: string;
-  private readonly lastName: string;
-  private readonly age: number;
-  private readonly phone: string;
-  private readonly email: string;
-  private readonly address: string;
+  readonly id: number | null;
+  public name: string;
+  public middleName: string;
+  public lastName: string;
+  public age: number;
+  public phone: string;
+  public email: string;
+  public address: string;
 
   private constructor (id: number | null, name: string, middleName: string, lastName: string, age: number, phone: string, email: string, address: string) {
     this.id = id;
@@ -62,51 +55,6 @@ export default class Patient implements PatientInterface {
     this.phone = phone;
     this.email = email;
     this.address = address;
-  }
-
-  getId() { return this.id };
-  getName() { return this.name }
-  getMiddleName() { return this.middleName }
-  getLastName() { return this.lastName }
-  getAge() { return this.age }
-  getPhone() { return this.phone }
-  getEmail() { return this.email }
-  getAddress() { return this.address }
-
-  setName(name: string) {
-    const record = this.getRecord();
-    record.name = name;
-    return Patient.fromRecord(record);
-  };
-  setMiddleName(middleName: string) {
-    const record = this.getRecord();
-    record.middleName = middleName;
-    return Patient.fromRecord(record);
-  }
-  setLastName(lastName: string) {
-    const record = this.getRecord();
-    record.lastName = lastName;
-    return Patient.fromRecord(record);
-  }
-  setAge(age: number) {
-    const record = this.getRecord();
-    record.age = age;
-    return Patient.fromRecord(record);
-  }
-  setPhone(phone: string) {
-    const record = this.getRecord();
-    record.phone = phone;
-    return Patient.fromRecord(record);
-  }
-  setEmail(email: string) {
-    const record = this.getRecord();
-    record.email = email;
-    return Patient.fromRecord(record);
-  }
-  setAddress(address: string) {
-    const record = this.getRecord();
-    record.address = address;
-    return Patient.fromRecord(record);
   }
   
   validateId() {
@@ -133,6 +81,7 @@ export default class Patient implements PatientInterface {
   validateAddress() {
     return this.address !== '';
   }
+
   isValid() {
     return (
       this.validateId()
@@ -164,5 +113,9 @@ export default class Patient implements PatientInterface {
 
   public static fromRecord(data: PatientRecord): Patient {
     return new Patient(data.id, data.name, data.middleName, data.lastName, data.age, data.phone, data.email, data.address);
+  }
+
+  getCopy() {
+    return new Patient(this.id, this.name, this.middleName, this.lastName, this.age, this.phone, this.email, this.address);
   }
 }

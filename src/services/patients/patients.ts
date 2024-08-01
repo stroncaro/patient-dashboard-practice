@@ -128,7 +128,7 @@ export class MockPatientService implements PatientService {
   private _patients: PatientRecord[];
   
   /* TODO: funcion generadora de id */
-  
+
   private constructor () {
     this._patients = INITIAL_PATIENT_DATA;
   }
@@ -152,7 +152,7 @@ export class MockPatientService implements PatientService {
       throw new Error("Invalid patient");
     }
 
-    const id = patient.getId();
+    const id = patient.id;
     const index = this._patients.findIndex(record => id === record.id);
     if (index === -1) {
       throw new Error("Patient not found");

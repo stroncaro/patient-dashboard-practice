@@ -27,7 +27,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled
 
   const getPatientFromFormValues: () => Patient = () => {
     const record: PatientRecord = {
-      id: defaultPatient.getId(),
+      id: defaultPatient.id,
       name: (document.getElementById('name') as HTMLInputElement).value,
       middleName: (document.getElementById('middleName') as HTMLInputElement).value,
       lastName: (document.getElementById('lastName') as HTMLInputElement).value,
@@ -52,13 +52,13 @@ const PatientForm: React.FC<PatientFormProps> = ({ defaultPatient, inputDisabled
       onSubmit={onSubmit}
     >
       {[
-        { id: "name", label: "Name", defaultValue: defaultPatient.getName(), isValid: patient.validateName(), },
-        { id: "middleName", label: "Middle Name", defaultValue: defaultPatient.getMiddleName(), isValid: patient.validateMiddleName(), },
-        { id: "lastName", label: "Last Name", defaultValue: defaultPatient.getLastName(), isValid: patient.validateLastName(), },
-        { id: "age", label: "Age", defaultValue: defaultPatient.getAge(), isValid: patient.validateAge(), },
-        { id: "phone", label: "Phone", defaultValue: defaultPatient.getPhone(), isValid: patient.validatePhone(), },
-        { id: "email", label: "Email", defaultValue: defaultPatient.getEmail(), isValid: patient.validateEmail(), },
-        { id: "address", label: "Address", defaultValue: defaultPatient.getAddress(), isValid: patient.validateAddress(), }
+        { id: "name", label: "Name", defaultValue: defaultPatient.name, isValid: patient.validateName(), },
+        { id: "middleName", label: "Middle Name", defaultValue: defaultPatient.middleName, isValid: patient.validateMiddleName(), },
+        { id: "lastName", label: "Last Name", defaultValue: defaultPatient.lastName, isValid: patient.validateLastName(), },
+        { id: "age", label: "Age", defaultValue: defaultPatient.age, isValid: patient.validateAge(), },
+        { id: "phone", label: "Phone", defaultValue: defaultPatient.phone, isValid: patient.validatePhone(), },
+        { id: "email", label: "Email", defaultValue: defaultPatient.email, isValid: patient.validateEmail(), },
+        { id: "address", label: "Address", defaultValue: defaultPatient.address, isValid: patient.validateAddress(), }
       ].map((inputData, i) => (
         <div
           key={i}

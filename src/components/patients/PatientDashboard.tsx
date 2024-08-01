@@ -10,10 +10,9 @@ type PatientModalState = 'closed' | 'view' | 'edit';
 
 export const PatientDashboard: React.FC = () => {
   const { patients, loadingStates, fetchPatientPageAsync, updatePatientAsync } = usePatients();
-  const PATIENT_PAGE = 1;
 
   useEffect(() => {
-    fetchPatientPageAsync(PATIENT_PAGE);
+    fetchPatientPageAsync();
   }, [])
 
   const [selectedPatientIndex, setSelectedPatientIndex] = useState<number | null>(null);
@@ -38,7 +37,7 @@ export const PatientDashboard: React.FC = () => {
             const isSelected = patientIndex === selectedPatientIndex;
             return (
               <li 
-                key={patient.getId()}
+                key={patient.id}
                 className={clsx(
                   "flex justify-between items-center px-4 my-1 border-l-2 hover:border-primary hover:cursor-pointer",
                   {
