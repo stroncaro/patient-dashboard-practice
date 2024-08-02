@@ -1,21 +1,32 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const Header: React.FC = () => {
-  const { isLoggedIn, logIn, logOut } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user, logOutUser } = useContext(AuthContext);
 
   return (
     <header className="flex justify-between items-center p-6 bg-primary text-white">
       <div className="flex items-baseline text-2xl font-bold gap-1 underline">
-        <div className="flex justify-center items-center size-8 p-2 rounded-full font-black bg-white text-primary">S</div>
+        <div className="flex justify-center items-center size-8 p-2 rounded-full font-black bg-white text-primary">
+          S
+        </div>
         SuperSoft
       </div>
       <ul className="flex items-center gap-4 font-bold">
-        {!isLoggedIn ? (
+        {user ? (
+          <li className="flex items-center justify-end gap-8">
+            <p className="text-xl">Welcome, {user.username}</p>
+            <button onClick={logOutUser} className="btn btn-xl btn-primary">
+              Log out
+            </button>
+          </li>
+        ) : (
           <>
             <li>
               <button
-                onClick={logIn}
+                onClick={() => navigate("/login")}
                 className="btn btn-xl btn-primary"
               >
                 Log In
@@ -23,22 +34,13 @@ export const Header: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={logIn}
+                onClick={() => navigate("/signup")}
                 className="btn btn-xl btn-highlight"
               >
                 Sign up
               </button>
             </li>
           </>
-        ) : (
-          <li>
-            <button
-              onClick={logOut}
-              className="btn btn-xl btn-primary"
-            >
-              Log out
-            </button>
-          </li>
         )}
       </ul>
     </header>

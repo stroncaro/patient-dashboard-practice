@@ -3,7 +3,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import PatientDashboard from "./patients/PatientDashboard";
 
 export const AppContent: React.FC = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { userId: isLoggedIn } = useContext(AuthContext);
 
   return (
     <main className="flex-grow flex justify-center items-start p-6">
