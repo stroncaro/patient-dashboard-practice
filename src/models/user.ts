@@ -51,7 +51,7 @@ export class UserValidator {
   }
 
   static validatePassword(password: string) {
-    return password.length > 8;
+    return password.length >= 8;
   }
 
   static validateUser(user: User) {

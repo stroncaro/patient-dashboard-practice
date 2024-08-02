@@ -10,18 +10,22 @@ type ValueTuple<T> = {
   valid?: boolean;
 };
 
-const LogInForm: React.FC = () => {
+const SignUpForm: React.FC = () => {
   /* TODO: add proper feedback */
 
   const { userId, setUserId } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [username, setUsername] = useState<ValueTuple<string>>({ value: "" });
-  const [password, setPassword] = useState<ValueTuple<string>>({ value: "" });
-  const [invalidCombination, setInvalidCombination] = useState<boolean>(false);
 
-  const { logIn } = useUsers();
-  const [logingIn, setLogingIn] = useState<boolean>(false);
+  const [password, setPassword] = useState<ValueTuple<string>>({ value: "" });
+  const [confirmPassword, setConfirmPassword] = useState<ValueTuple<string>>({
+    value: "",
+  });
+
+  const { createUser } = useUsers();
+  const [waiting, setWaiting] = useState<boolean>(false);
+  const [creationFailed, setCreationFailed] = useState<boolean>(false);
 
   useEffect(() => {
     if (userId !== null) {
@@ -71,25 +75,60 @@ const LogInForm: React.FC = () => {
     []
   );
 
+  const onChangeConfirmPassword: React.ChangeEventHandler<HTMLInputElement> =
+    useCallback(
+      (ev) => {
+        setConfirmPassword((prev) => {
+          const newConfirmation = ev.target.value;
+          const tuple: ValueTuple<string> = { value: newConfirmation };
+          if (prev.valid !== undefined) {
+            tuple.valid = newConfirmation === password.value;
+          }
+          return tuple;
+        });
+      },
+      [password]
+    );
+
+  const onBlurConfirmPassword: React.FocusEventHandler<HTMLInputElement> =
+    useCallback(
+      () =>
+        setPassword((prev) => ({
+          value: prev.value,
+          valid: prev.value === password.value,
+        })),
+      [password]
+    );
+
   const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
     (ev) => {
+      console.group("Sign up attempt");
       ev.preventDefault();
-      if (logingIn || !username.valid || !password.valid) {
+      if (
+        waiting ||
+        !username.valid ||
+        !password.valid ||
+        password.value !== confirmPassword.value
+      ) {
+        console.log("requirements not met, aborting");
+        console.groupEnd();
         return;
       }
 
-      setLogingIn(true);
-      logIn(username.value, password.value)
+      setWaiting(true);
+      console.log("requirements met");
+      createUser(username.value, password.value)
         .then((id) => {
           setUserId(id);
           navigate("/");
         })
         .catch((error) => {
           console.error(error);
-          setInvalidCombination(true);
-          setLogingIn(false);
+          setCreationFailed(true);
+          setWaiting(false);
         });
     },
+
     [username, password]
   );
 
@@ -140,24 +179,40 @@ const LogInForm: React.FC = () => {
         />
       </div>
       <div
-        className={clsx("h-20 text-base text-red", {
-          invisible: !invalidCombination,
+        className={clsx({
+          "[&>input]:border-red [&>input]:text-red":
+            confirmPassword.valid !== undefined && !confirmPassword.valid,
+          "[&_input]:border-primary [&_input]:text-primary":
+            confirmPassword.valid,
         })}
       >
-        Invalid username/password combination!
+        <label htmlFor="confirmation">Confirm</label>
+        <input
+          id="confirmation"
+          type="password"
+          onChange={onChangeConfirmPassword}
+          onBlur={onBlurConfirmPassword}
+        />
+      </div>
+      <div
+        className={clsx("h-20 text-base text-red", {
+          invisible: !creationFailed,
+        })}
+      >
+        Creation failed. Username exists?
       </div>
       <button
         type="submit"
         className={clsx("btn w-32 h-12 font-bold", {
-          "border-primary bg-primary text-white hover:bg-black hover:border-black":
-            !logingIn,
-          "bg-black border-black text-white": logingIn,
+          "border-secondary bg-secondary text-white hover:bg-black hover:border-black":
+            !waiting,
+          "bg-black border-black text-white": waiting,
         })}
       >
-        {logingIn ? "..." : "Log In"}
+        {waiting ? "..." : "Sign Up"}
       </button>
     </form>
   );
 };
 
-export default LogInForm;
+export default SignUpForm;

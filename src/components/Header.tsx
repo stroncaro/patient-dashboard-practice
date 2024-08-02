@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import useUsers from "../hooks/users/useUsers";
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { userId } = useContext(AuthContext);
-  const { logOut } = useUsers();
+  const { userId, resetUserId } = useContext(AuthContext);
+
+  console.log(`logged user: ${userId}`);
 
   return (
     <header className="flex justify-between items-center p-6 bg-primary text-white">
@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
         SuperSoft
       </div>
       <ul className="flex items-center gap-4 font-bold">
-        {!userId ? (
+        {userId === null ? (
           <>
             <li>
               <button
@@ -29,7 +29,8 @@ export const Header: React.FC = () => {
             </li>
             <li>
               <button
-                /* onClick={logIn} */ className="btn btn-xl btn-highlight"
+                onClick={() => navigate("/signup")}
+                className="btn btn-xl btn-highlight"
               >
                 Sign up
               </button>
@@ -37,7 +38,7 @@ export const Header: React.FC = () => {
           </>
         ) : (
           <li>
-            <button onClick={logOut} className="btn btn-xl btn-primary">
+            <button onClick={resetUserId} className="btn btn-xl btn-primary">
               Log out
             </button>
           </li>
