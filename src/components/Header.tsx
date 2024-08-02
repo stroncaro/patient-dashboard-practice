@@ -1,8 +1,10 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import useUsers from "../hooks/users/useUsers";
 
 export const Header: React.FC = () => {
+  const navigate = useNavigate();
   const { userId } = useContext(AuthContext);
   const { logOut } = useUsers();
 
@@ -18,7 +20,10 @@ export const Header: React.FC = () => {
         {!userId ? (
           <>
             <li>
-              <button /* onClick={logIn} */ className="btn btn-xl btn-primary">
+              <button
+                onClick={() => navigate("/login")}
+                className="btn btn-xl btn-primary"
+              >
                 Log In
               </button>
             </li>
