@@ -1,22 +1,18 @@
-import { createContext, PropsWithChildren, useState } from "react";
+import { createContext, PropsWithChildren } from "react";
+import useUsers from "../hooks/users/useUsers";
 
-export const AuthContext = createContext({
-  isLoggedIn: false,
-  logIn: () => { },
-  logOut: () => { },
+interface AuthContextProps {
+  userId: number | null;
+}
+
+export const AuthContext = createContext<AuthContextProps>({
+  userId: null,
 });
 
-/* TODO: Refactor to a service */
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  /* TODO: Create actual log in functionality */
-  const logIn = () => setIsLoggedIn(true);
-  const logOut = () => setIsLoggedIn(false);
+  const { userId } = useUsers();
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, logIn, logOut }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ userId }}>{children}</AuthContext.Provider>
   );
 };
