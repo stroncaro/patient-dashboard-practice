@@ -1,7 +1,6 @@
 import Recipe, { RecipeList } from "../../models/recipe";
 import delay from "../../utils/delay";
-import { MockPatientService } from "../patients/patients";
-import { MockUserService } from "../users/users";
+import { UserService, PatientService } from "../services";
 
 export interface RecipeService {
   createRecipe: (
@@ -36,8 +35,8 @@ export class MockRecipeService implements RecipeService {
     content: string
   ): Promise<number> {
     const results = await Promise.all([
-      MockUserService.instance.getUserExists(user),
-      MockPatientService.getInstance().getPatientExists(patient),
+      UserService.instance.getUserExists(user),
+      PatientService.getInstance().getPatientExists(patient),
     ]);
 
     if (!results[0] || !results[1]) {
