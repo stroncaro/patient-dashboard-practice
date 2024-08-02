@@ -4,6 +4,7 @@ import AppContent from "./components/AppContent";
 import Header from "./components/Header";
 import LogInForm from "./components/users/LogInForm";
 import SignUpForm from "./components/users/SignUpForm";
+import RecipeDashboard from "./components/recipes/RecipeDashboard";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               </>
             }
           />
+          <Route path="/user/recipes" element={<RecipeDashboard />} />
           <Route path="/login" element={<LogInForm />} />
           <Route path="/signup" element={<SignUpForm />} />
         </Routes>
