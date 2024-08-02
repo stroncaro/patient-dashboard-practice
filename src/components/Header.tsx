@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { userId, resetUserId } = useContext(AuthContext);
-
-  console.log(`logged user: ${userId}`);
+  const { user, logOutUser } = useContext(AuthContext);
 
   return (
     <header className="flex justify-between items-center p-6 bg-primary text-white">
@@ -17,7 +15,14 @@ export const Header: React.FC = () => {
         SuperSoft
       </div>
       <ul className="flex items-center gap-4 font-bold">
-        {userId === null ? (
+        {user ? (
+          <li className="flex items-center justify-end gap-8">
+            <p className="text-xl">Welcome, {user.username}</p>
+            <button onClick={logOutUser} className="btn btn-xl btn-primary">
+              Log out
+            </button>
+          </li>
+        ) : (
           <>
             <li>
               <button
@@ -36,12 +41,6 @@ export const Header: React.FC = () => {
               </button>
             </li>
           </>
-        ) : (
-          <li>
-            <button onClick={resetUserId} className="btn btn-xl btn-primary">
-              Log out
-            </button>
-          </li>
         )}
       </ul>
     </header>

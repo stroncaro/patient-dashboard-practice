@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import useUsers from "../../hooks/users/useUsers";
-import { UserValidator } from "../../models/user";
+import User, { UserValidator } from "../../models/user";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ type ValueTuple<T> = {
 const SignUpForm: React.FC = () => {
   /* TODO: add proper feedback */
 
-  const { userId, setUserId } = useContext(AuthContext);
+  const { user, logUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [username, setUsername] = useState<ValueTuple<string>>({ value: "" });
@@ -28,7 +28,7 @@ const SignUpForm: React.FC = () => {
   const [creationFailed, setCreationFailed] = useState<boolean>(false);
 
   useEffect(() => {
-    if (userId !== null) {
+    if (user !== null) {
       navigate("/");
     }
   }, []);
@@ -102,7 +102,6 @@ const SignUpForm: React.FC = () => {
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
     (ev) => {
-      console.group("Sign up attempt");
       ev.preventDefault();
       if (
         waiting ||
@@ -110,16 +109,13 @@ const SignUpForm: React.FC = () => {
         !password.valid ||
         password.value !== confirmPassword.value
       ) {
-        console.log("requirements not met, aborting");
-        console.groupEnd();
         return;
       }
 
       setWaiting(true);
-      console.log("requirements met");
       createUser(username.value, password.value)
         .then((id) => {
-          setUserId(id);
+          logUser(new User(id, username.value, ""));
           navigate("/");
         })
         .catch((error) => {

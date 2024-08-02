@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import useUsers from "../../hooks/users/useUsers";
-import { UserValidator } from "../../models/user";
+import User, { UserValidator } from "../../models/user";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ type ValueTuple<T> = {
 const LogInForm: React.FC = () => {
   /* TODO: add proper feedback */
 
-  const { userId, setUserId } = useContext(AuthContext);
+  const { user, logUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [username, setUsername] = useState<ValueTuple<string>>({ value: "" });
@@ -24,7 +24,7 @@ const LogInForm: React.FC = () => {
   const [logingIn, setLogingIn] = useState<boolean>(false);
 
   useEffect(() => {
-    if (userId !== null) {
+    if (user !== null) {
       navigate("/");
     }
   }, []);
@@ -81,7 +81,7 @@ const LogInForm: React.FC = () => {
       setLogingIn(true);
       logIn(username.value, password.value)
         .then((id) => {
-          setUserId(id);
+          logUser(new User(id, username.value, ""));
           navigate("/");
         })
         .catch((error) => {
