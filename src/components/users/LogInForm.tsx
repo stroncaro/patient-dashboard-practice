@@ -1,77 +1,156 @@
 import clsx from "clsx";
 import useUsers from "../../hooks/users/useUsers";
 import { UserValidator } from "../../models/user";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 type ValueTuple<T> = {
   value: T;
-  validity?: boolean;
+  valid?: boolean;
 };
 
 const UserForm: React.FC = () => {
+  const { userId } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState<ValueTuple<string>>({ value: "" });
   const [password, setPassword] = useState<ValueTuple<string>>({ value: "" });
   const [invalidCombination, setInvalidCombination] = useState<boolean>(false);
+
   const { logIn } = useUsers();
+  const [logingIn, setLogingIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (userId !== null) {
+      navigate("/");
+    }
+  }, []);
 
   const onChangeUsername: React.ChangeEventHandler<HTMLInputElement> =
     useCallback((ev) => {
       setUsername((prev) => {
         const newUsername = ev.target.value;
-        prev.value = newUsername;
-        if (prev.validity !== undefined) {
-          prev.validity = UserValidator.validateUsername(newUsername);
+        const tuple: ValueTuple<string> = { value: newUsername };
+        if (prev.valid !== undefined) {
+          tuple.valid = UserValidator.validateUsername(newUsername);
         }
-        return prev;
+        return tuple;
       });
     }, []);
+
+  const onBlurUsername: React.FocusEventHandler<HTMLInputElement> = useCallback(
+    () =>
+      setUsername((prev) => ({
+        value: prev.value,
+        valid: UserValidator.validateUsername(prev.value),
+      })),
+    []
+  );
 
   const onChangePassword: React.ChangeEventHandler<HTMLInputElement> =
     useCallback((ev) => {
       setPassword((prev) => {
         const newPassword = ev.target.value;
-        prev.value = newPassword;
-        if (prev.validity !== undefined) {
-          prev.validity = UserValidator.validatePassword(newPassword);
+        const tuple: ValueTuple<string> = { value: newPassword };
+        if (prev.valid !== undefined) {
+          tuple.valid = UserValidator.validatePassword(newPassword);
         }
-        return prev;
+        return tuple;
       });
     }, []);
+
+  const onBlurPassword: React.FocusEventHandler<HTMLInputElement> = useCallback(
+    () =>
+      setPassword((prev) => ({
+        value: prev.value,
+        valid: UserValidator.validatePassword(prev.value),
+      })),
+    []
+  );
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
     (ev) => {
       ev.preventDefault();
-      if (
-        UserValidator.validateUsername(username.value) &&
-        UserValidator.validatePassword(password.value)
-      ) {
-        logIn(username.value, password.value).then((success) => {
-          if (!success) {
-            setInvalidCombination(true);
-          }
-        });
+      if (logingIn || !username.valid || !password.valid) {
+        return;
       }
+
+      setLogingIn(true);
+      logIn(username.value, password.value).then((success) => {
+        if (!success) {
+          setInvalidCombination(true);
+          setLogingIn(false);
+        } else {
+          navigate("/");
+        }
+      });
     },
     [username, password]
   );
   return (
-    <form onSubmit={onSubmit}>
-      <div>
+    <form
+      onSubmit={onSubmit}
+      className={clsx(
+        // center on screen
+        "m-auto flex flex-col items-center",
+        // size and position div children
+        "[&>div]:my-2 [&>div]:w-[20rem] [&>div]:flex [&>div]:justify-center [&>div]:items-center",
+        // size grandchildren
+        "[&>div>*]:w-[10rem]",
+        // style inputs
+        "[&_input]:py-1 [&_input]:px-2 [&_input]:rounded-md [&_input]:border-2 [&_input]:outline-none",
+        // set text
+        "text-xl"
+      )}
+    >
+      <div
+        className={clsx({
+          "[&>input]:border-red [&>input]:text-red":
+            username.valid !== undefined && !username.valid,
+          "[&_input]:border-primary [&_input]:text-primary": username.valid,
+        })}
+      >
         <label htmlFor="username">Username</label>
-        <input id="username" type="text" onChange={onChangeUsername} />
-      </div>
-      <div>
-        <label htmlFor="password">Password</label>
-        <input id="password" type="password" onChange={onChangePassword} />
+        <input
+          id="username"
+          type="text"
+          onChange={onChangeUsername}
+          onBlur={onBlurUsername}
+        />
       </div>
       <div
         className={clsx({
-          invisible: invalidCombination,
+          "[&>input]:border-red [&>input]:text-red":
+            password.valid !== undefined && !password.valid,
+          "[&_input]:border-primary [&_input]:text-primary": password.valid,
         })}
       >
-        <p>Invalid username/password combination!</p>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          onChange={onChangePassword}
+          onBlur={onBlurPassword}
+        />
       </div>
-      <button type="submit">Log In</button>
+      <div
+        className={clsx("h-20 text-base text-red", {
+          invisible: !invalidCombination,
+        })}
+      >
+        Invalid username/password combination!
+      </div>
+      <button
+        type="submit"
+        className={clsx("btn w-32 h-12 font-bold", {
+          "border-primary bg-primary text-white hover:bg-black hover:border-black":
+            !logingIn,
+          "bg-black border-black text-white": logingIn,
+        })}
+      >
+        {logingIn ? "..." : "Log In"}
+      </button>
     </form>
   );
 };
