@@ -2,6 +2,7 @@ import Patient, { PatientRecord, PatientList } from "../../models/patient";
 import delay from "../../utils/delay";
 
 export interface PatientService {
+  getPatientExists: (id: number) => Promise<boolean>;
   getPatients: (limit?: number, skip?: number) => Promise<PatientList>;
   addPatient: (data: PatientRecord) => Promise<number>;
   deletePatient: (id: number) => Promise<boolean>;
@@ -126,38 +127,47 @@ const SERVER_DELAY = 1;
 export class MockPatientService implements PatientService {
   private static _instance?: MockPatientService;
   private _patients: PatientRecord[];
-  
+
   /* TODO: funcion generadora de id */
 
-  private constructor () {
+  private constructor() {
     this._patients = INITIAL_PATIENT_DATA;
   }
-  
+
+  async getPatientExists(id: number): Promise<boolean> {
+    await delay(SERVER_DELAY);
+
+    const patient = this._patients.find((patient) => patient.id === id);
+    return !!patient;
+  }
+
   static getInstance(): PatientService {
     MockPatientService._instance ??= new MockPatientService();
     return MockPatientService._instance;
   }
-  
-  async getPatients(limit: number = 10, skip: number = 0): Promise<PatientList> {
+
+  async getPatients(
+    limit: number = 10,
+    skip: number = 0
+  ): Promise<PatientList> {
     await delay(SERVER_DELAY);
     const records = this._patients.slice(skip, skip + limit);
     return records.map((record) => Patient.fromRecord(record));
   }
 
-  
   async updatePatient(patient: Patient): Promise<boolean> {
     await delay(SERVER_DELAY);
-    
+
     if (!patient.isValid()) {
       throw new Error("Invalid patient");
     }
 
     const id = patient.id;
-    const index = this._patients.findIndex(record => id === record.id);
+    const index = this._patients.findIndex((record) => id === record.id);
     if (index === -1) {
       throw new Error("Patient not found");
     }
-    
+
     this._patients[index] = patient.getRecord();
     return true;
   }
