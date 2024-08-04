@@ -1,29 +1,34 @@
 import { MouseEventHandler, PropsWithChildren, useEffect } from "react";
 import ReactDOM from "react-dom";
 
-
 interface ModalBoxProps {
+  onClose: () => void;
   title?: string;
-  closeCallback: () => void;
 }
 
-const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title, closeCallback }) => {
-  
+const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({
+  children,
+  title,
+  onClose,
+}) => {
   useEffect(() => {
     function handleEscapeKeyDown(ev: KeyboardEvent) {
-      if (ev.key === 'Escape') closeCallback();
+      if (ev.key === "Escape") onClose();
     }
-    
-    window.addEventListener('keydown', handleEscapeKeyDown);
-    return () => { window.removeEventListener('keydown', handleEscapeKeyDown) }
+
+    window.addEventListener("keydown", handleEscapeKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleEscapeKeyDown);
+    };
   }, []);
-  
-  const handleContentClick: MouseEventHandler<HTMLDivElement> = (ev) => ev.stopPropagation();
+
+  const handleContentClick: MouseEventHandler<HTMLDivElement> = (ev) =>
+    ev.stopPropagation();
 
   return ReactDOM.createPortal(
     <div
       className="flex justify-center items-center fixed top-0 left-0 size-full bg-black bg-opacity-30 fade-in-fast"
-      onClick={closeCallback}
+      onClick={onClose}
     >
       <div
         className="rounded-xl shadow-xl bg-white slide-down-fast"
@@ -33,18 +38,16 @@ const ModalBox: React.FC<PropsWithChildren<ModalBoxProps>> = ({ children, title,
           {title && <h1>{title}</h1>}
           <button
             className="flex justify-center items-center size-6 ml-auto border rounded-xl border-white text-sm hover:bg-white hover:text-primary"
-            onClick={closeCallback}
+            onClick={onClose}
           >
             X
           </button>
         </div>
-        <div className="px-6 py-4 text-black">
-          {children}
-        </div>
+        <div className="px-6 py-4 text-black">{children}</div>
       </div>
     </div>,
     document.body
   );
-}
+};
 
 export default ModalBox;
