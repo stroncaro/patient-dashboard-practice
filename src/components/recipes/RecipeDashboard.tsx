@@ -82,10 +82,7 @@ const RecipeDashboard: React.FC = () => {
       {/* Modal Form */}
       {form && (
         <ModalBox title="Add Recipe" onClose={() => setForm(false)}>
-          <RecipeForm
-            patients={patients}
-            onSubmit={(ev) => ev.preventDefault()}
-          />
+          <RecipeForm patients={patients} onSubmit={() => {}} />
         </ModalBox>
       )}
     </div>
