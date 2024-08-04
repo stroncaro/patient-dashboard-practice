@@ -26,8 +26,9 @@ export class MockUserService implements UserService {
   private _nextId: number;
 
   constructor() {
-    this._users = [];
     this._nextId = 0;
+    // TODO: remove admin user
+    this._users = [new User(this._generateId(), "admin", "password")];
   }
 
   async getUserExists(id: number): Promise<boolean> {
