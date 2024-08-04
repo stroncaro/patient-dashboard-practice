@@ -3,7 +3,7 @@ import Patient, { PatientList } from "../../models/patient";
 import clsx from "clsx";
 
 type RecipeForm = {
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: (patientId: number, content: string) => Promise<void>;
   disableSubmit?: boolean;
   disableInput?: boolean;
 } & (
@@ -28,7 +28,9 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!disableSubmit && patientId) {
-      onSubmit(e);
+      onSubmit(Number(patientId), content).catch((error) =>
+        console.error(error)
+      );
     }
   };
 

@@ -10,13 +10,15 @@ import usePatients from "../../hooks/patients/usePatients";
 const RecipeDashboard: React.FC = () => {
   // const { user } = useContext(AuthContext);
   /* TODO: remove. This is for testing purposes only! */
-  const user = new User(0, "carlos", "");
+  const user = new User(0, "admin", "");
 
-  const { getRecipes } = useRecipes();
+  const { getRecipes, createRecipe } = useRecipes();
   const { patients, fetchPatientPageAsync } = usePatients();
   const [recipes, setRecipes] = useState<RecipeList>([]);
   const [working, setWorking] = useState<boolean>(false);
   const [form, setForm] = useState<boolean>(false);
+  const [disableFormInteraction, setDisableFormInteraction] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
@@ -27,6 +29,25 @@ const RecipeDashboard: React.FC = () => {
         .finally(() => setWorking(false));
     }
   }, []);
+
+  const handleFormSubmit: (
+    patientId: number,
+    content: string
+  ) => Promise<void> = async (patientId, content) => {
+    setDisableFormInteraction(true);
+
+    try {
+      await createRecipe((user as User).id as number, patientId, content);
+    } catch (error) {
+      throw error;
+    } finally {
+      setDisableFormInteraction(false);
+    }
+
+    setForm(false);
+    const recipes = await getRecipes((user as User).id as number);
+    setRecipes(recipes);
+  };
 
   return (
     <div className="w-1/2">
@@ -82,7 +103,12 @@ const RecipeDashboard: React.FC = () => {
       {/* Modal Form */}
       {form && (
         <ModalBox title="Add Recipe" onClose={() => setForm(false)}>
-          <RecipeForm patients={patients} onSubmit={() => {}} />
+          <RecipeForm
+            patients={patients}
+            onSubmit={handleFormSubmit}
+            disableSubmit={disableFormInteraction}
+            disableInput={disableFormInteraction}
+          />
         </ModalBox>
       )}
     </div>
