@@ -13,10 +13,13 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
   const [content, setContent] = useState<string>("");
 
   return (
-    <form onSubmit={onSubmit}>
-      <label>
-        Patient
-        <select name="patient">
+    <form onSubmit={onSubmit} className="flex flex-col gap-2">
+      <label className="flex items-center gap-2">
+        Patient:
+        <select
+          name="patient"
+          className="grow p-1 border rounded italic border-primary bg-white"
+        >
           {patient && (
             <option value={`${patient.id}`} disabled selected>
               {patient.getFullName()}
@@ -36,19 +39,24 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
           )}
         </select>
       </label>
-      <label>
-        Content
+      <label className="flex flex-col">
+        <span className="sr-only">Content</span>
         <textarea
           name="content"
           rows={6}
-          // cols={50}
           placeholder="Write your recipe..."
           value={content}
           onChange={(ev) => setContent(ev.target.value)}
+          className="p-2 rounded"
         />
       </label>
-      <div>
-        <button type="submit">Submit</button>
+      <div className="self-end">
+        <button
+          type="submit"
+          className="btn btn-md bg-secondary text-white border border-black font-bold text-xl"
+        >
+          Submit
+        </button>
       </div>
     </form>
   );
