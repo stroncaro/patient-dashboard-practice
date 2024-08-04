@@ -14,14 +14,10 @@ interface RecipeHook {
 const useRecipes: () => RecipeHook = () => {
   const service = RecipeService.instance;
 
-  const createRecipe = service.createRecipe;
-  const getRecipes = service.getRecipes;
-  const deleteRecipe = service.deleteRecipe;
-
   return {
-    createRecipe,
-    getRecipes,
-    deleteRecipe,
+    createRecipe: service.createRecipe.bind(service),
+    getRecipes: service.getRecipes.bind(service),
+    deleteRecipe: service.deleteRecipe.bind(service),
   };
 };
 
