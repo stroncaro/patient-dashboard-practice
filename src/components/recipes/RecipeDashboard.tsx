@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { RecipeList } from "../../models/recipe";
 import useRecipes from "../../hooks/recipes/useRecipes";
+import RecipeForm from "./RecipeForm";
 
 const RecipeDashboard: React.FC = () => {
   const { user } = useContext(AuthContext);
@@ -9,6 +10,7 @@ const RecipeDashboard: React.FC = () => {
   const { getRecipes } = useRecipes();
   const [recipes, setRecipes] = useState<RecipeList>([]);
   const [working, setWorking] = useState<boolean>(false);
+  const [form, setForm] = useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
@@ -22,6 +24,7 @@ const RecipeDashboard: React.FC = () => {
 
   return (
     <div className="w-1/2">
+      {/* Ask for login */}
       {!user && (
         <>
           <div className="my-4">
@@ -31,12 +34,17 @@ const RecipeDashboard: React.FC = () => {
           <p>Must be logged in</p>
         </>
       )}
+
+      {/* Content */}
       {user && (
         <>
+          {/* Title */}
           <div className="my-4">
             <h1 className="text-3xl font-bold">Your recipes</h1>
             <hr />
           </div>
+
+          {/* List */}
           <div>
             {working && <p>Loading...</p>}
             {!working && recipes.length === 0 && <p>You have no recipes</p>}
@@ -49,8 +57,20 @@ const RecipeDashboard: React.FC = () => {
               </ul>
             )}
           </div>
+
+          {/* Button area */}
+          {!working && (
+            <div className="m-4 flex justify-end">
+              <button className="btn btn-md bg-secondary border border-black text-white font-bold">
+                +
+              </button>
+            </div>
+          )}
         </>
       )}
+
+      {/* Modal Form */}
+      {form && <RecipeForm />}
     </div>
   );
 };
