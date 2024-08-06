@@ -27,7 +27,7 @@ export class MockRecipeService implements RecipeService {
   private constructor() {
     this._nextId = 0;
     // TODO: delete later. For testing only!
-    this._recipes = [new Recipe(this._getNextId(), 0, 0, "test recipe")];
+    this._recipes = [new Recipe(this._getNextId(), 0, 1, "test recipe")];
   }
 
   async createRecipe(

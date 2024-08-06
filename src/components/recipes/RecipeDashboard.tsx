@@ -1,11 +1,44 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { RecipeList } from "../../models/recipe";
+import Recipe, { RecipeList } from "../../models/recipe";
 import useRecipes from "../../hooks/recipes/useRecipes";
 import RecipeForm from "./RecipeForm";
 import User from "../../models/user";
 import ModalBox from "../common/ModalBox";
 import usePatients from "../../hooks/patients/usePatients";
+import { PatientList } from "../../models/patient";
+
+type RecipeListMap = { [key: string]: RecipeList };
+
+function _createPatientNameToRecipeMap(
+  recipes: RecipeList,
+  patients: PatientList
+): RecipeListMap {
+  const patientId_recipes_map: RecipeListMap = recipes.reduce(
+    (prev: RecipeListMap, recipe) => {
+      if (prev[recipe.patientId]) {
+        prev[recipe.patientId].push(recipe);
+      } else {
+        prev[recipe.patientId] = [recipe];
+      }
+      return prev;
+    },
+    {}
+  );
+
+  const patientName_recipes_map: RecipeListMap = Object.keys(
+    patientId_recipes_map
+  ).reduce((prev, id) => {
+    const patient = patients.find((patient) => patient.id === Number(id));
+    if (patient) {
+      return { ...prev, [patient.getFullName()]: patientId_recipes_map[id] };
+    } else {
+      return prev;
+    }
+  }, {});
+
+  return patientName_recipes_map;
+}
 
 const RecipeDashboard: React.FC = () => {
   // const { user } = useContext(AuthContext);
@@ -30,6 +63,8 @@ const RecipeDashboard: React.FC = () => {
     }
   }, []);
 
+  const patientRecipeMap = _createPatientNameToRecipeMap(recipes, patients);
+
   const handleFormSubmit: (
     patientId: number,
     content: string
@@ -45,8 +80,10 @@ const RecipeDashboard: React.FC = () => {
     }
 
     setForm(false);
+    setWorking(true);
     const recipes = await getRecipes((user as User).id as number);
     setRecipes(recipes);
+    setWorking(false);
   };
 
   return (
@@ -77,10 +114,20 @@ const RecipeDashboard: React.FC = () => {
             {!working && recipes.length === 0 && <p>You have no recipes</p>}
             {!working && recipes.length > 0 && (
               <ul>
-                {recipes.map((recipe, i) => (
-                  // TODO: properly render recipes, grouped by patient
-                  <li key={i}>{recipe.content}</li>
-                ))}
+                {Object.entries(patientRecipeMap).map(
+                  ([patientName, patientRecipes], i) => (
+                    <ul key={i} className="list-disc list-inside">
+                      <div className="hover:bg-primary px-2 italic">
+                        {patientName} ({patientRecipes.length})
+                      </div>
+                      {patientRecipes.map((recipe, j) => (
+                        <li key={`${i},${j}`} className="px-2 hover:bg-primary">
+                          {recipe.content}
+                        </li>
+                      ))}
+                    </ul>
+                  )
+                )}
               </ul>
             )}
           </div>
