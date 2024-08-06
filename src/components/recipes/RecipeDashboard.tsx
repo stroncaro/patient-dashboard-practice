@@ -49,7 +49,7 @@ const RecipeDashboard: React.FC = () => {
   /* TODO: remove. This is for testing purposes only! */
   const user = new User(0, "admin", "");
 
-  const { getRecipes, createRecipe } = useRecipes();
+  const { getRecipes, createRecipe, deleteRecipe } = useRecipes();
   const { patients, fetchPatientPageAsync } = usePatients();
   const [recipes, setRecipes] = useState<RecipeList>([]);
   const [working, setWorking] = useState<boolean>(false);
@@ -110,6 +110,17 @@ const RecipeDashboard: React.FC = () => {
     }
   };
 
+  // const handleRecipeViewClick;
+  // const handleRecipeEditClick;
+  const handleRecipeDeleteClick = (recipeId: number) => {
+    setWorking(true);
+    deleteRecipe(recipeId)
+      .then(() => getRecipes(user.id as number))
+      .then((recipes) => setRecipes(recipes))
+      .catch((error) => console.error(error))
+      .finally(() => setWorking(false));
+  };
+
   return (
     <div className="w-1/2">
       {/* Ask for login */}
@@ -163,7 +174,12 @@ const RecipeDashboard: React.FC = () => {
                                 <button type="button">
                                   <IconPen />
                                 </button>
-                                <button type="button">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleRecipeDeleteClick(recipe.id)
+                                  }
+                                >
                                   <IconBin />
                                 </button>
                               </div>
