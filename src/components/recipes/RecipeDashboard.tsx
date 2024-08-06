@@ -46,9 +46,7 @@ function _createPatientNameToRecipeMap(
 type RecipeDashboardFormState = "none" | "add" | "edit";
 
 const RecipeDashboard: React.FC = () => {
-  // const { user } = useContext(AuthContext);
-  /* TODO: remove. This is for testing purposes only! */
-  const user = new User(0, "admin", "");
+  const { user } = useContext(AuthContext);
 
   const { getRecipes, createRecipe, deleteRecipe, updateRecipe } = useRecipes();
   const { patients, fetchPatientPageAsync } = usePatients();
@@ -142,7 +140,7 @@ const RecipeDashboard: React.FC = () => {
   const handleRecipeDeleteClick = (recipe: Recipe) => {
     setWorking(true);
     deleteRecipe(recipe.id)
-      .then(() => getRecipes(user.id as number))
+      .then(() => getRecipes((user as User).id as number))
       .then((recipes) => setRecipes(recipes))
       .catch((error) => console.error(error))
       .finally(() => setWorking(false));
