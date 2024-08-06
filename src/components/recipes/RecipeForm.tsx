@@ -1,11 +1,17 @@
 import { useState } from "react";
 import Patient, { PatientList } from "../../models/patient";
 import clsx from "clsx";
+import Recipe from "../../models/recipe";
 
 type RecipeForm = {
-  onSubmit: (patientId: number, content: string) => Promise<void>;
+  onSubmit: (
+    patientId: number,
+    content: string,
+    recipeId?: number
+  ) => Promise<void>;
   disableSubmit?: boolean;
   disableInput?: boolean;
+  recipe?: Recipe;
 } & (
   | { patient: Patient; patients?: never }
   | { patient?: never; patients: PatientList }
@@ -18,9 +24,10 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
     onSubmit,
     disableSubmit = false,
     disableInput = false,
+    recipe,
   } = props;
 
-  const [content, setContent] = useState<string>("");
+  const [content, setContent] = useState<string>(recipe?.content ?? "");
   const [patientId, setPatientId] = useState<string>(
     patient ? `${patient.id}` : ""
   );
@@ -28,7 +35,7 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!disableSubmit && patientId) {
-      onSubmit(Number(patientId), content).catch((error) =>
+      onSubmit(Number(patientId), content, recipe?.id).catch((error) =>
         console.error(error)
       );
     }

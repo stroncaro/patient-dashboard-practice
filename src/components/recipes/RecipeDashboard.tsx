@@ -1,14 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { RecipeList } from "../../models/recipe";
+import Recipe, { RecipeList } from "../../models/recipe";
 import useRecipes from "../../hooks/recipes/useRecipes";
 import RecipeForm from "./RecipeForm";
 import User from "../../models/user";
 import ModalBox from "../common/ModalBox";
 import usePatients from "../../hooks/patients/usePatients";
-import { PatientList } from "../../models/patient";
+import Patient, { PatientList } from "../../models/patient";
 
-import { MdRemoveRedEye as IconEye } from "react-icons/md";
 import { IoTrashBin as IconBin } from "react-icons/io5";
 import { FaPen as IconPen } from "react-icons/fa6";
 
@@ -44,16 +43,24 @@ function _createPatientNameToRecipeMap(
   return patientName_recipes_map;
 }
 
+type RecipeDashboardFormState = "none" | "add" | "edit";
+
 const RecipeDashboard: React.FC = () => {
   // const { user } = useContext(AuthContext);
   /* TODO: remove. This is for testing purposes only! */
   const user = new User(0, "admin", "");
 
-  const { getRecipes, createRecipe, deleteRecipe } = useRecipes();
+  const { getRecipes, createRecipe, deleteRecipe, updateRecipe } = useRecipes();
   const { patients, fetchPatientPageAsync } = usePatients();
   const [recipes, setRecipes] = useState<RecipeList>([]);
   const [working, setWorking] = useState<boolean>(false);
-  const [form, setForm] = useState<boolean>(false);
+  const [form, setForm] = useState<RecipeDashboardFormState>("none");
+  const [formInitialPatient, setFormInitialPatient] = useState<Patient | null>(
+    null
+  );
+  const [formInitialRecipe, setFormInitialRecipe] = useState<Recipe | null>(
+    null
+  );
   const [disableFormInteraction, setDisableFormInteraction] =
     useState<boolean>(false);
 
@@ -76,19 +83,31 @@ const RecipeDashboard: React.FC = () => {
 
   const handleFormSubmit: (
     patientId: number,
-    content: string
-  ) => Promise<void> = async (patientId, content) => {
+    content: string,
+    recipeId?: number
+  ) => Promise<void> = async (patientId, content, recipeId) => {
     setDisableFormInteraction(true);
 
     try {
-      await createRecipe((user as User).id as number, patientId, content);
+      switch (form) {
+        case "add":
+          await createRecipe((user as User).id as number, patientId, content);
+          break;
+        case "edit":
+          if (!recipeId) {
+            throw new Error(
+              "Invalid state: trying to edit a recipe without providing recipe id"
+            );
+          }
+          await updateRecipe(recipeId, content);
+      }
     } catch (error) {
       throw error;
     } finally {
       setDisableFormInteraction(false);
     }
 
-    setForm(false);
+    setForm("none");
     setWorking(true);
     const recipes = await getRecipes((user as User).id as number);
     setRecipes(recipes);
@@ -111,10 +130,18 @@ const RecipeDashboard: React.FC = () => {
   };
 
   // const handleRecipeViewClick;
-  // const handleRecipeEditClick;
-  const handleRecipeDeleteClick = (recipeId: number) => {
+  const handleRecipeEditClick = (recipe: Recipe) => {
+    const patient = patients.find((p) => p.id === recipe.patientId);
+    if (!patient) return;
+
+    setFormInitialPatient(patient);
+    setFormInitialRecipe(recipe);
+    setForm("edit");
+  };
+
+  const handleRecipeDeleteClick = (recipe: Recipe) => {
     setWorking(true);
-    deleteRecipe(recipeId)
+    deleteRecipe(recipe.id)
       .then(() => getRecipes(user.id as number))
       .then((recipes) => setRecipes(recipes))
       .catch((error) => console.error(error))
@@ -168,16 +195,16 @@ const RecipeDashboard: React.FC = () => {
                             selectedRecipe.patientIndex === patientIndex &&
                             selectedRecipe.recipeIndex === recipeIndex && (
                               <div className="flex gap-1 text-xs ml-auto [&>button]:w-5 [&>button]:h-5 [&>button]:bg-black [&>button]:text-white [&>button]:rounded [&>button]:border [&>button]:border-black [&>button:hover]:bg-white [&>button:hover]:text-black [&>button]:flex [&>button]:justify-center [&>button]:items-center">
-                                <button type="button">
-                                  <IconEye />
-                                </button>
-                                <button type="button">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRecipeEditClick(recipe)}
+                                >
                                   <IconPen />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    handleRecipeDeleteClick(recipe.id)
+                                    handleRecipeDeleteClick(recipe)
                                   }
                                 >
                                   <IconBin />
@@ -199,7 +226,7 @@ const RecipeDashboard: React.FC = () => {
               <button
                 className="btn btn-md bg-secondary border border-black text-white font-bold"
                 // TODO: set actual onClick function, this is for testing
-                onClick={() => setForm(true)}
+                onClick={() => setForm("add")}
               >
                 +
               </button>
@@ -209,10 +236,16 @@ const RecipeDashboard: React.FC = () => {
       )}
 
       {/* Modal Form */}
-      {form && (
-        <ModalBox title="Add Recipe" onClose={() => setForm(false)}>
+      {form !== "none" && (
+        <ModalBox
+          title={form === "add" ? "Add Recipe" : "Edit Recipe"}
+          onClose={() => setForm("none")}
+        >
           <RecipeForm
-            patients={patients}
+            {...(formInitialPatient
+              ? { patient: formInitialPatient }
+              : { patients: patients })}
+            recipe={formInitialRecipe ?? undefined}
             onSubmit={handleFormSubmit}
             disableSubmit={disableFormInteraction}
             disableInput={disableFormInteraction}

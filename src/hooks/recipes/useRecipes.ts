@@ -8,6 +8,7 @@ interface RecipeHook {
     content: string
   ) => Promise<number>;
   getRecipes: (user?: number, patient?: number) => Promise<RecipeList>;
+  updateRecipe: (id: number, content: string) => Promise<void>;
   deleteRecipe: (id: number) => Promise<void>;
 }
 
@@ -17,6 +18,7 @@ const useRecipes: () => RecipeHook = () => {
   return {
     createRecipe: service.createRecipe.bind(service),
     getRecipes: service.getRecipes.bind(service),
+    updateRecipe: service.updateRecipe.bind(service),
     deleteRecipe: service.deleteRecipe.bind(service),
   };
 };

@@ -9,6 +9,7 @@ export interface RecipeService {
     content: string
   ) => Promise<number>;
   getRecipes: (user?: number, patient?: number) => Promise<RecipeList>;
+  updateRecipe: (id: number, content: string) => Promise<void>;
   deleteRecipe: (id: number) => Promise<void>;
 }
 
@@ -69,6 +70,17 @@ export class MockRecipeService implements RecipeService {
         return this._recipes;
       }
     }
+  }
+
+  async updateRecipe(id: number, content: string) {
+    await delay(SERVER_DELAY);
+
+    const recipe = this._recipes.find((recipe) => recipe.id === id);
+    if (!recipe) {
+      throw new Error(`Invalid recipe id: ${id}`);
+    }
+
+    recipe.content = content;
   }
 
   async deleteRecipe(id: number): Promise<void> {
