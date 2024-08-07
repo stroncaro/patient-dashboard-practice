@@ -1,7 +1,4 @@
-import {
-  UserService,
-  MockUserService as UserServiceImplementation,
-} from "../../services/users/users";
+import { UserService } from "../../services/services";
 import { UserValidator } from "../../models/user";
 
 interface UsersHook {
@@ -10,7 +7,7 @@ interface UsersHook {
 }
 
 const useUsers: () => UsersHook = () => {
-  const service = UserServiceImplementation.instance as UserService;
+  const service = UserService.instance;
 
   const createUser = async (username: string, password: string) => {
     if (

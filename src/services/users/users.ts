@@ -15,6 +15,7 @@ export interface UserService {
   ) => Promise<boolean>;
   deleteUser: (id: number, password: string) => Promise<boolean>;
   logIn: (username: string, password: string) => Promise<number>;
+  getUserExists: (id: number) => Promise<boolean>;
 }
 
 const SERVER_DELAY = 1;
@@ -25,8 +26,16 @@ export class MockUserService implements UserService {
   private _nextId: number;
 
   constructor() {
-    this._users = [];
     this._nextId = 0;
+    // TODO: remove admin user
+    this._users = [new User(this._generateId(), "admin", "password")];
+  }
+
+  async getUserExists(id: number): Promise<boolean> {
+    await delay(SERVER_DELAY);
+
+    const user = this._users.find((user) => user.id === id);
+    return !!user;
   }
 
   static get instance(): UserService {

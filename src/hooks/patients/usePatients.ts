@@ -1,6 +1,6 @@
-import { useState } from "react"
-import Patient, { PatientList } from "../../models/patient"
-import { MockPatientService as PatientServiceImplementation, PatientService } from "../../services/patients/patients";
+import { useState } from "react";
+import Patient, { PatientList } from "../../models/patient";
+import { PatientService } from "../../services/services";
 
 type PatientsHookFunctions = "fetch" | "add" | "update" | "delete";
 type LoadingStates = Record<PatientsHookFunctions, boolean>;
@@ -15,7 +15,7 @@ interface PatientsReactHook {
 }
 
 const usePatients: () => PatientsReactHook = () => {
-  const Service = PatientServiceImplementation.getInstance() as PatientService;
+  const Service = PatientService.getInstance();
   const [patients, setPatients] = useState<PatientList>([]);
   const [loadingStates, setLoadingStates] = useState<LoadingStates>({
     fetch: false,
@@ -23,25 +23,25 @@ const usePatients: () => PatientsReactHook = () => {
     update: false,
     delete: false,
   });
-  
+
   /* TODO: handle pagination */
   const fetchPatientPageAsync = async () => {
     if (!loadingStates.fetch) {
-      setLoadingStates(prev => ({ ...prev, fetch: true }));
+      setLoadingStates((prev) => ({ ...prev, fetch: true }));
     }
 
     const fetchedPatients = await Service.getPatients();
     setPatients(fetchedPatients);
-    setLoadingStates(prev => ({ ...prev, fetch: false }));
-  }
+    setLoadingStates((prev) => ({ ...prev, fetch: false }));
+  };
 
   const addPatientAsync = async (_patient: Patient) => {
     throw Error("Not implemented");
-  }
+  };
 
   const updatePatientAsync = async (patient: Patient) => {
     if (!loadingStates.update) {
-      setLoadingStates(prev => ({ ...prev, update: true }));
+      setLoadingStates((prev) => ({ ...prev, update: true }));
     }
 
     try {
@@ -49,15 +49,15 @@ const usePatients: () => PatientsReactHook = () => {
     } catch (error) {
       return false;
     }
-    
-    setLoadingStates(prev => ({ ...prev, update: false }));
+
+    setLoadingStates((prev) => ({ ...prev, update: false }));
     fetchPatientPageAsync();
     return true;
-  }
+  };
 
   const deletePatientAsync = async (_id: number) => {
     throw Error("Not implemented");
-  }
+  };
 
   return {
     patients: patients,
@@ -66,7 +66,7 @@ const usePatients: () => PatientsReactHook = () => {
     addPatientAsync: addPatientAsync,
     updatePatientAsync: updatePatientAsync,
     deletePatientAsync: deletePatientAsync,
-  }
-};  
+  };
+};
 
 export default usePatients;
