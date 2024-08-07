@@ -1,12 +1,12 @@
-export type RecipeList = Recipe[];
+export type PrescriptionList = Prescription[];
 
-interface IRecipe {
+interface IPrescription {
   userId: number;
   patientId: number;
   content: string;
 }
 
-class Recipe implements IRecipe {
+class Prescription implements IPrescription {
   id: number;
   userId: number;
   patientId: number;
@@ -32,4 +32,4 @@ class Recipe implements IRecipe {
   }
 }
 
-export default Recipe;
+export default Prescription;

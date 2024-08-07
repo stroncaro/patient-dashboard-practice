@@ -18,12 +18,14 @@ const Landing: React.FC = () => {
         </li>
         <li>
           <Link
-            to="/recipes"
+            to="/prescriptions"
             className={clsx({
               "pointer-events-none cursor-not-allowed": !user,
             })}
           >
-            <span className={clsx({ "line-through": !user })}>Recipes </span>
+            <span className={clsx({ "line-through": !user })}>
+              Prescriptions{" "}
+            </span>
             {!user && (
               <span className="italic text-xs text-[#666]">
                 (requires sign in)

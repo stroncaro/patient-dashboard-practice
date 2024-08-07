@@ -1,5 +1,5 @@
 import { MockUserService as UserService } from "./users/users";
 import { MockPatientService as PatientService } from "./patients/patients";
-import { MockRecipeService as RecipeService } from "./recipes/recipes";
+import { MockPrescriptionService as PrescriptionService } from "./prescriptions/prescriptions";
 
-export { UserService, PatientService, RecipeService };
+export { UserService, PatientService, PrescriptionService };

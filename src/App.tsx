@@ -7,7 +7,7 @@ import {
 import { AuthProvider } from "./contexts/AuthContext";
 import LogInForm from "./components/users/LogInForm";
 import SignUpForm from "./components/users/SignUpForm";
-import RecipeDashboard from "./components/recipes/RecipeDashboard";
+import PrescriptionDashboard from "./components/prescriptions/PrescriptionDashboard";
 import PatientDashboard from "./components/patients/PatientDashboard";
 import MainLayout from "./components/MainLayout";
 import Landing from "./components/Landing";
@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Landing />} />
             <Route path="patients" element={<PatientDashboard />} />
-            <Route path="recipes" element={<RecipeDashboard />} />
+            <Route path="prescriptions" element={<PrescriptionDashboard />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

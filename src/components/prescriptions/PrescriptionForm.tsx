@@ -1,33 +1,33 @@
 import { useState } from "react";
 import Patient, { PatientList } from "../../models/patient";
 import clsx from "clsx";
-import Recipe from "../../models/recipe";
+import Prescription from "../../models/prescription";
 
-type RecipeForm = {
+type PrescriptionForm = {
   onSubmit: (
     patientId: number,
     content: string,
-    recipeId?: number
+    prescriptionId?: number
   ) => Promise<void>;
   disableSubmit?: boolean;
   disableInput?: boolean;
-  recipe?: Recipe;
+  prescription?: Prescription;
 } & (
   | { patient: Patient; patients?: never }
   | { patient?: never; patients: PatientList }
 );
 
-const RecipeForm: React.FC<RecipeForm> = (props) => {
+const PrescriptionForm: React.FC<PrescriptionForm> = (props) => {
   const {
     patient,
     patients,
     onSubmit,
     disableSubmit = false,
     disableInput = false,
-    recipe,
+    prescription,
   } = props;
 
-  const [content, setContent] = useState<string>(recipe?.content ?? "");
+  const [content, setContent] = useState<string>(prescription?.content ?? "");
   const [patientId, setPatientId] = useState<string>(
     patient ? `${patient.id}` : ""
   );
@@ -35,7 +35,7 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!disableSubmit && patientId) {
-      onSubmit(Number(patientId), content, recipe?.id).catch((error) =>
+      onSubmit(Number(patientId), content, prescription?.id).catch((error) =>
         console.error(error)
       );
     }
@@ -75,7 +75,7 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
         <textarea
           name="content"
           rows={6}
-          placeholder="Write your recipe..."
+          placeholder="Write your prescription..."
           value={content}
           onChange={(ev) => setContent(ev.target.value)}
           className="p-2 rounded"
@@ -97,4 +97,4 @@ const RecipeForm: React.FC<RecipeForm> = (props) => {
   );
 };
 
-export default RecipeForm;
+export default PrescriptionForm;
